@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>中文 on Weiyi(Henry)Hu</title><link>https://weiyi-hu.com/tags/%E4%B8%AD%E6%96%87/</link><description>Recent content in 中文 on Weiyi(Henry)Hu</description><generator>Hugo -- gohugo.io</generator><language>en-gb</language><lastBuildDate>Thu, 02 Jul 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://weiyi-hu.com/tags/%E4%B8%AD%E6%96%87/index.xml" rel="self" type="application/rss+xml"/><item><title>溪水旁2.0，一年之后</title><link>https://weiyi-hu.com/posts/vibe-coding-for-god/</link><pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate><guid>https://weiyi-hu.com/posts/vibe-coding-for-god/</guid><description>&lt;h2 id="前言去年六月的一句承诺">前言：去年六月的一句承诺&lt;/h2>
+&lt;p>去年六月，我在这里写下了《溪水旁2.0计划书》：模块化首页、播客式语音、多人同听、文字高光、经文映射、祷告墙、好友关注……写的时候野心勃勃，读起来像是下个月就能全部上线。&lt;/p>
+&lt;p>一年多过去了。今天想老老实实记一笔账：到底做出了什么，踩了哪些坑，哪些设想还安静地躺在待办清单里。剧透一下——答案和计划书不太一样，但我觉得更有意思。&lt;/p>
+&lt;p>真正动工是从今年一月的一次头脑风暴开始的：技术栈定为 React Native + GraphQL，一套代码打三个平台。而真正密集的开发，集中在四月十一日到二十一日之间——八九个批次，其中好几天是从白天写到深夜，把一个单文件 HTML 原型，变成了一个能登录、能收藏、能搜索、还能&amp;quot;开口说话&amp;quot;的真实应用。代码全部放在 &lt;a href="https://github.com/Waye/BytheStream2.0">github.com/Waye/BytheStream2.0&lt;/a>，好奇细节的可以自己翻。&lt;/p>
+&lt;h2 id="八个页面一个原型">八个页面，一个原型&lt;/h2>
+&lt;p>一切从一个叫 &lt;code>xishuipang-prototype.html&lt;/code> 的单文件原型开始——所有页面的交互先在一个文件里走一遍，感觉对了，再动真格。&lt;/p>
+&lt;p>真格是 Expo SDK 52 + React Native 0.76.9 + TypeScript，配 Expo Router 的文件路由和 Zustand 状态管理，一套代码同时跑在 iOS、Android 和网页上。首页最先成型：三套主题（暖白、深色、护眼），顶部导航、公告轮播、最新文章、我的收藏、往期期刊，加一个常驻底部的 Mini Player——地基一天基本搭完。&lt;/p>
+&lt;p>五天后，剩下的八个页面一口气全部实现：期刊详情做成了 Spotify 专辑式的曲目列表，文章阅读器带字号调节和简繁切换，播放队列、全部期刊、收藏管理、搜索结果、登录页、用户中心，一个不落。播放队列排序当时图省事用了上下箭头按钮而不是拖拽，理由很实在——&amp;ldquo;跨平台兼容&amp;rdquo;。真正的拖拽排序留进了待办清单，到现在还没轮到它。&lt;/p>
+&lt;h2 id="通上电真数据真后端和一份没被用上的设计研究">通上电：真数据、真后端，和一份没被用上的设计研究&lt;/h2>
+&lt;p>页面有了骨架，接下来是让它活起来。后端选了 Fastify 配 Mercurius GraphQL，DataLoader 防 N+1 查询，MongoDB Atlas 存内容，简繁版本靠 slug 后缀 &lt;code>_s&lt;/code> / &lt;code>_t&lt;/code> 区分。前端从 mock 数据切到 Apollo Client 真实查询，搜索页做出了每页十条的无限滚动。&lt;/p>
+&lt;p>图片系统意外地成了个大工程：文章正文里历史遗留的 &lt;code>&amp;lt;filename.jpg&amp;gt;&lt;/code> 标记要用正则解析出来，期刊封面要从封面封底文章里智能提取。顺手做了个优化——期刊列表原本要发 85 次数据库计数查询，改成一次聚合查询，加载时间肉眼可见地缩短。&lt;/p>
+&lt;p>打磨视觉语言的过程中，还认认真真把 Pinterest 的设计系统拆解了一遍——色板、Pin Sans 字体、圆角尺度、暖调的中性色——写成了一份完整的参考文档。最后《溪水旁》走的是完全不同的路：暖白、深色、护眼，外加春夏秋冬四套季节主题。那份 Pinterest 研究基本没直接用上，文档倒是还留着，就当是&amp;quot;我们确实做过功课&amp;quot;的纪念品。&lt;/p></description></item><item><title>PTECore‘s Learning Experience</title><link>https://weiyi-hu.com/posts/pte991010/</link><pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate><guid>https://weiyi-hu.com/posts/pte991010/</guid><description>&lt;p>从去年开始准备加拿大移民语言考试, 历时1年终于尘埃落定.
+总而言之, 我不是英语特别好的学生. 所以其实花费了不少时间.
+整体上难度 雅思 &amp;gt; 思培 &amp;gt; ptecore.&lt;/p>
+&lt;p>让我慢慢来分析, 雅思G类是从A类过度, 所以对很多方面要求还是很高的. 思培是我后来选择的考试, 感觉都很容易, 但作文和口语一直都是卡分项目.
+这是人工批发你的部分. 作文感觉不能出错, 而且没有固定的话题. 特别后来参加的人多了, 题库不可预测. 口语很难, 也是大部分人卡分的地方.
+总体上来说,口语考的时间很长, 换言之, 也容易丢分.&lt;/p>
+&lt;p>今天让我重点分析下如何准备ptecore, 这个我最后考到了 clb101099.&lt;/p>
+&lt;h2 id="口语">口语&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>RA: 一句话或全文, 一句话最好虚实结合 10-12字速度是全文1.25倍. 注意发音,不要吞音大舌头, 发音尽量准确, 大声,这样机器好收音.&lt;/p>
+&lt;ul>
+&lt;li>练习: 题库ynwac, 多墨(80+), zoompte&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>RS: 背题库, 我喜欢考试时记下关键词,这样复苏的时候不至于忘词.&lt;/p>
+&lt;ul>
+&lt;li>练习: 题库ynwac, zoompte , 萤火虫星际(针对最后难题 训练自己反应力)&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>RTS, DI: 无脑背模板, 流利度至上&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="写作">写作&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>WE: 找到模板好好背, 一字不漏, 写作时不能语法错误. 10分钟考试,5分钟写完, 3分钟检查&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>练习:题库固定&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>SST: WE一样&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>SWT: 抄写原句, 总结的句子即可&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="阅读">阅读&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>FIB: 刷题即可&lt;/p></description></item></channel></rss>
