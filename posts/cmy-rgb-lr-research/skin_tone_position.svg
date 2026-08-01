@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 250" role="img" aria-labelledby="t d">
+<title id="t">肤色在红带与橙带之间的位置</title>
+<desc id="d">肤色大致占据色相十五到三十度，位于中心在零度的红带与中心在三十度的橙带之间。嘴唇与腮红更靠近红，约五到十五度；大部分面部皮肤更靠近橙，约二十到二十八度。</desc>
+<style>
+  .lbl { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; font-size: 12px; }
+  .hd  { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; font-size: 13px; font-weight: 600; }
+  .tx  { fill: #57534c; }
+  .mk  { stroke: #3a3733; }
+  .box { fill: #3a3733; stroke: #3a3733; }
+  .hair { stroke: #b4b0a8; }
+  @media (prefers-color-scheme: dark) {
+    .tx   { fill: #a9a49b; }
+    .mk   { stroke: #e0dbd2; }
+    .box  { fill: #e0dbd2; stroke: #e0dbd2; }
+    .hair { stroke: #55514a; }
+  }
+</style>
+
+<rect class="hair" x="60" y="80" width="560" height="34" fill="none" stroke-width=".6"/>
+<rect x="60"  y="80" width="70" height="34" fill="#C7452F" fill-opacity=".8"/>
+<rect x="130" y="80" width="70" height="34" fill="#D06238" fill-opacity=".8"/>
+<rect x="200" y="80" width="70" height="34" fill="#D97A2B" fill-opacity=".8"/>
+<rect x="270" y="80" width="70" height="34" fill="#CE9430" fill-opacity=".8"/>
+<rect x="340" y="80" width="70" height="34" fill="#C9A62B" fill-opacity=".8"/>
+<rect x="410" y="80" width="70" height="34" fill="#B5B02C" fill-opacity=".8"/>
+<rect x="480" y="80" width="70" height="34" fill="#94B02F" fill-opacity=".8"/>
+<rect x="550" y="80" width="70" height="34" fill="#6FAB38" fill-opacity=".8"/>
+
+<line class="mk" x1="60"  y1="70" x2="60"  y2="122" stroke-width="2"/>
+<line class="mk" x1="200" y1="70" x2="200" y2="122" stroke-width="2"/>
+<line class="mk" x1="340" y1="70" x2="340" y2="122" stroke-width="2"/>
+
+<text class="hd tx" x="60"  y="62" text-anchor="middle">红 0°</text>
+<text class="hd tx" x="200" y="62" text-anchor="middle">橙 30°</text>
+<text class="hd tx" x="340" y="62" text-anchor="middle">黄 60°</text>
+
+<rect class="box" x="130" y="132" width="70" height="22" fill-opacity=".14" stroke-width="1"/>
+<text class="lbl tx" x="165" y="147" text-anchor="middle">肤色主区</text>
+<text class="lbl tx" x="165" y="174" text-anchor="middle">约 20°–28°</text>
+
+<rect class="box" x="83" y="132" width="47" height="22" fill-opacity=".06" stroke-width="1" stroke-dasharray="3 3"/>
+<line class="hair" x1="106" y1="154" x2="106" y2="184" stroke-width=".6"/>
+<text class="lbl tx" x="106" y="196" text-anchor="middle">唇 · 腮红</text>
+<text class="lbl tx" x="106" y="214" text-anchor="middle">约 5°–15°</text>
+
+<text class="lbl tx" x="410" y="214" text-anchor="middle">大部分面部皮肤更靠近橙，而非红</text>
+<text class="lbl tx" x="340" y="240" text-anchor="middle">所以调肤色时 Orange 是主力，Red 只做辅助，比例约 2 : 1</text>
+</svg>

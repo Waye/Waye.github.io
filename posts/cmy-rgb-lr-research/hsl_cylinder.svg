@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 420" role="img" aria-labelledby="t d">
+<title id="t">HSL 圆柱坐标</title>
+<desc id="d">把 RGB 立方体换成圆柱坐标读取：明度是垂直高度，底部为黑、顶部为白；饱和度是离中轴的水平距离，中轴是灰、越往外颜色越浓；色相是绕中轴旋转的角度，转一圈三百六十度回到原点。</desc>
+<style>
+  .lbl { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; font-size: 12px; }
+  .hd  { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; font-size: 14px; font-weight: 600; }
+  .tx  { fill: #57534c; }
+  .hd  { fill: #2f2c27; }
+  .wall  { stroke: #9a9891; }
+  .axis  { stroke: #8a8880; }
+  .lead  { stroke: #b4b0a8; }
+  .body  { fill: #8a8880; }
+  @media (prefers-color-scheme: dark) {
+    .tx   { fill: #a9a49b; }
+    .hd   { fill: #e8e4dc; }
+    .wall { stroke: #6a665f; }
+    .axis { stroke: #7a766f; }
+    .lead { stroke: #55514a; }
+    .body { fill: #cfcac1; }
+  }
+</style>
+
+<ellipse class="wall body" cx="260" cy="70" rx="150" ry="46" fill-opacity=".10" stroke-width=".8"/>
+<path class="wall body" d="M110 70 V300 A150 46 0 0 0 410 300 V70" fill-opacity=".07" stroke-width=".8"/>
+<ellipse class="wall" cx="260" cy="185" rx="150" ry="46" fill="none" stroke-width=".8" stroke-dasharray="4 4"/>
+
+<circle cx="150" cy="196" r="7.5" fill="#FF9500"/>
+<circle cx="370" cy="174" r="7.5" fill="#0080BF"/>
+<circle cx="260" cy="146" r="7.5" fill="#26A31F"/>
+<circle cx="260" cy="224" r="7.5" fill="#C0269E"/>
+
+<line class="axis" x1="260" y1="70" x2="260" y2="300" stroke-width="1" stroke-dasharray="3 3"/>
+<circle class="body" cx="260" cy="185" r="5"/>
+<line class="axis" x1="260" y1="185" x2="158" y2="195" stroke-width="1.6"/>
+
+<line class="lead" x1="262" y1="70"  x2="468" y2="70"  stroke-width=".8"/>
+<text class="hd"  x="480" y="66">L 明度 = 高度</text>
+<text class="lbl tx" x="480" y="86">顶白，底黑，中间层最鲜艳</text>
+
+<line class="lead" x1="205" y1="190" x2="468" y2="160" stroke-width=".8"/>
+<text class="hd"  x="480" y="156">S 饱和度 = 半径</text>
+<text class="lbl tx" x="480" y="176">中轴是灰，越往外越浓</text>
+
+<line class="lead" x1="150" y1="196" x2="468" y2="250" stroke-width=".8"/>
+<text class="hd"  x="480" y="246">H 色相 = 角度</text>
+<text class="lbl tx" x="480" y="266">绕一圈 360 度回到原点</text>
+
+<text class="lbl tx" x="260" y="50"  text-anchor="middle">白 · L 100%</text>
+<text class="lbl tx" x="260" y="340" text-anchor="middle">黑 · L 0%</text>
+<text class="lbl tx" x="128" y="218" text-anchor="middle">0°</text>
+<text class="lbl tx" x="260" y="132" text-anchor="middle">120°</text>
+<text class="lbl tx" x="394" y="160" text-anchor="middle">210°</text>
+
+<text class="lbl tx" x="340" y="382" text-anchor="middle">同一个 RGB 立方体，换成圆柱坐标读取</text>
+<text class="lbl tx" x="340" y="402" text-anchor="middle">注意顶和底缩成了一个点——那里所有色相和饱和度都失效</text>
+</svg>

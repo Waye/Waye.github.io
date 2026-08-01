@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>计算机 on Weiyi(Henry)Hu</title>
+    <link>http://localhost:1313/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA/</link>
+    <description>Recent content in 计算机 on Weiyi(Henry)Hu</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 21 Jul 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Lumen-Neuro:把四种柯达电影胶片装进一个 137,539 参数的可微物理引擎</title>
+      <link>http://localhost:1313/posts/lumen-neuro--preprint/</link>
+      <pubDate>Tue, 21 Jul 2026 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/posts/lumen-neuro--preprint/</guid>
+      
+      <description>&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;一篇写给大学生(和好奇的高中生)的完整技术复盘&lt;/strong&gt; —— 从第一行 datasheet 校验代码,到 arXiv 预印本里的最后一个数字。这篇文章为 Lumen-Neuro 的第一篇论文(claim A / M2 里程碑)画上句号:读完它,你不需要翻仓库、不需要翻 WORKLOG,就能理解整个项目的思路、代码、实验、弯路和边界。&lt;/p&gt;
+&lt;p&gt;作者:Weiyi | 项目仓库:&lt;code&gt;github.com/Waye/Lumen-Neuro&lt;/code&gt; | 状态:M2 完成(2026-06-02, commit dd3cba1),arXiv 预印包就绪&lt;/p&gt;&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;0-这篇文章怎么读&#34;&gt;0. 这篇文章怎么读&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;30 秒版&lt;/strong&gt;:胶片模拟领域有三条路——查找表(LUT)、图像到图像的神经网络、前向物理模拟器——但没有一条同时做到&amp;quot;物理可微 + 跨胶片 + 只用公开数据&amp;quot;。Lumen-Neuro 用&lt;strong&gt;物理方程当网络层、一个小神经网络补物理写不出的部分&lt;/strong&gt;,只靠柯达公开的技术数据表(datasheet),训出一个能同时表达 4 种 Vision3 电影胶片、且能在胶片之间&amp;quot;插值出中间胶片&amp;quot;的可微引擎。全模型 137,539 个参数,在一台 MacBook 上分钟级训完,H&amp;amp;D 曲线复现误差 &amp;lt; 0.007。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;5 分钟版&lt;/strong&gt;:读 §1(问题)、§4(核心创新 FilmINR)、§7(实验数字)、§10(边界与 TODO)。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;全文&lt;/strong&gt;:按顺序读。§5–§6 是代码层,§8–§9 是&amp;quot;这个项目实际是怎么被做出来的&amp;quot;——如果你想知道一个 solo 研究项目如何不失控,那两节是全文最值钱的部分。&lt;/p&gt;
+&lt;p&gt;文中所有数字都对回项目的 ground truth(&lt;code&gt;WORKLOG.md&lt;/code&gt; 验收条目),所有引用在文末标注核实状态——本项目执行&lt;strong&gt;零编造引用&lt;/strong&gt;纪律,查不到原始出处的文献一律标 &lt;code&gt;[TODO]&lt;/code&gt; 或直接击杀(§8 有两个真实案例)。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-问题胶片是什么为什么模拟它这么难&#34;&gt;1. 问题:胶片是什么,为什么模拟它这么难&lt;/h2&gt;
+&lt;h3 id=&#34;11-两分钟胶片物理课&#34;&gt;1.1 两分钟胶片物理课&lt;/h3&gt;
+&lt;p&gt;一卷彩色负片不是&amp;quot;一层感光材料&amp;quot;,而是&lt;strong&gt;三层叠在一起的乳剂&lt;/strong&gt;:分别对红、绿、蓝敏感。光子打进来,卤化银晶体记录潜影;显影液(比如电影胶片用的 ECN-2 工艺)把潜影放大成染料云;最终每一层的&amp;quot;黑度&amp;quot;(密度 D)取决于当初进了多少光(曝光量 E)。&lt;/p&gt;</description>
+      
+    </item>
+    
+  </channel>
+</rss>

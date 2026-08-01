@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 330" role="img" aria-labelledby="t d">
+<title id="t">Color Mixer 八个色带的重叠权重</title>
+<desc id="d">八条钟形权重曲线分布在色环上。红橙黄以约三十度间隔密集排列，绿、水蓝、蓝之间则相隔约六十度。相邻曲线互相重叠，因此十五度的色相会同时受红带与橙带影响；色环首尾相接，品红位于三百三十度，距离红只有三十度。</desc>
+<style>
+  .lbl { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; font-size: 12px; }
+  .ax  { stroke: #b4b0a8; stroke-width: 1; }
+  .tx  { fill: #57534c; }
+  .mk  { stroke: #57534c; }
+  .mkf { fill: #57534c; }
+  @media (prefers-color-scheme: dark) {
+    .ax  { stroke: #55514a; }
+    .tx  { fill: #a9a49b; }
+    .mk  { stroke: #d8d3ca; }
+    .mkf { fill: #d8d3ca; }
+  }
+</style>
+
+<line class="ax" x1="55" y1="245" x2="648" y2="245"/>
+
+<path d="M55 245 Q 62 95 135 245 Z"   fill="#C7452F" fill-opacity=".3" stroke="#C7452F" stroke-width="1.5"/>
+<path d="M62 245 Q 111 95 160 245 Z"  fill="#D97A2B" fill-opacity=".3" stroke="#D97A2B" stroke-width="1.5"/>
+<path d="M110 245 Q 159 95 215 245 Z" fill="#C9A62B" fill-opacity=".3" stroke="#C9A62B" stroke-width="1.5"/>
+<path d="M185 245 Q 255 95 325 245 Z" fill="#2E9E4F" fill-opacity=".3" stroke="#2E9E4F" stroke-width="1.5"/>
+<path d="M283 245 Q 352 95 421 245 Z" fill="#2AA198" fill-opacity=".3" stroke="#2AA198" stroke-width="1.5"/>
+<path d="M380 245 Q 449 95 512 245 Z" fill="#3B6FD4" fill-opacity=".3" stroke="#3B6FD4" stroke-width="1.5"/>
+<path d="M462 245 Q 521 95 575 245 Z" fill="#7B4FC4" fill-opacity=".3" stroke="#7B4FC4" stroke-width="1.5"/>
+<path d="M535 245 Q 594 95 648 245 Z" fill="#B03A8F" fill-opacity=".3" stroke="#B03A8F" stroke-width="1.5"/>
+
+<line class="mk" x1="79" y1="80" x2="79" y2="255" stroke-width="1.4" stroke-dasharray="4 3"/>
+<circle class="mkf" cx="79" cy="245" r="4"/>
+<text class="lbl tx" x="90" y="76">某个偏橙的红，15°</text>
+<text class="lbl tx" x="90" y="94">同时吃到 Red + Orange 两根滑块</text>
+
+<text class="lbl tx" x="60"  y="266" text-anchor="middle">红</text>
+<text class="lbl tx" x="111" y="266" text-anchor="middle">橙</text>
+<text class="lbl tx" x="159" y="266" text-anchor="middle">黄</text>
+<text class="lbl tx" x="255" y="266" text-anchor="middle">绿</text>
+<text class="lbl tx" x="352" y="266" text-anchor="middle">水蓝</text>
+<text class="lbl tx" x="449" y="266" text-anchor="middle">蓝</text>
+<text class="lbl tx" x="521" y="266" text-anchor="middle">紫</text>
+<text class="lbl tx" x="594" y="266" text-anchor="middle">品红</text>
+
+<text class="lbl tx" x="60"  y="288" text-anchor="middle">0°</text>
+<text class="lbl tx" x="255" y="288" text-anchor="middle">120°</text>
+<text class="lbl tx" x="449" y="288" text-anchor="middle">240°</text>
+<text class="lbl tx" x="645" y="288" text-anchor="middle">360°</text>
+
+<text class="lbl tx" x="352" y="316" text-anchor="middle">色环首尾相接：品红 330° 离红 0° 其实只有 30°</text>
+</svg>

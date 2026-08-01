@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en-gb"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">成色原理&amp;Lightroom调色研究 | Weiyi(Henry)Hu</title>
+<meta property="og:title" content="成色原理&amp;Lightroom调色研究 | Weiyi(Henry)Hu" />
+<meta name="twitter:title" content="成色原理&amp;Lightroom调色研究 | Weiyi(Henry)Hu" />
+<meta itemprop="name" content="成色原理&amp;Lightroom调色研究 | Weiyi(Henry)Hu" />
+<meta name="application-name" content="成色原理&amp;Lightroom调色研究 | Weiyi(Henry)Hu" />
+<meta property="og:site_name" content="Awesome hugo blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="en-gb" />
+<meta name="language" content="en-gb" />
+
+  <link rel="alternate" hreflang="en-gb" href="http://localhost:1313/posts/cmy-rgb-lr-research/index-1/" title="English" />
+
+
+
+
+
+    
+    
+    
+
+    <meta property="og:type" content="article" />
+    <meta property="og:article:published_time" content=2026-07-22T00:00:00Z />
+    <meta property="article:published_time" content=2026-07-22T00:00:00Z />
+    <meta property="og:url" content="http://localhost:1313/posts/cmy-rgb-lr-research/index-1/" />
+
+    
+    <meta property="og:article:author" content="Weiyi(Henry)Hu" />
+    <meta property="article:author" content="Weiyi(Henry)Hu" />
+    <meta name="author" content="Weiyi(Henry)Hu" />
+    
+    
+
+    
+
+    <script defer type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "成色原理\u0026Lightroom调色研究",
+        "author": {
+        "@type": "Person",
+        "name": ""
+        },
+        "datePublished": "2026-07-22",
+        "description": "",
+        "wordCount":  1304 ,
+        "mainEntityOfPage": "True",
+        "dateModified": "2026-07-22",
+        "image": {
+        "@type": "imageObject",
+        "url": ""
+        },
+        "publisher": {
+        "@type": "Organization",
+        "name": "Weiyi(Henry)Hu"
+        }
+    }
+    </script>
+
+
+<meta name="generator" content="Hugo 0.148.2">
+
+    
+    <meta property="og:url" content="http://localhost:1313/posts/cmy-rgb-lr-research/index-1/">
+  <meta property="og:site_name" content="Weiyi(Henry)Hu">
+  <meta property="og:title" content="成色原理&Lightroom调色研究">
+  <meta property="og:description" content="想在具体进入lumen-nuro 项目之前先介绍下基本的成色原理, 以及通过lightroom来介绍调色的逻辑 这篇文章不会牵扯过多的胶片的内容, 但会在之后的文章里解说 作者:Weiyi | 项目仓库:github.com/Waye/Lumen-Neuro | 状态:M2 完成(2026-06-02, commit dd3cba1),arXiv 预印包就绪
+序:先问一个奇怪的问题 打开 Lightroom,你会看到几十根滑块。大部分教程会告诉你&#34;这根往右拉画面变亮&#34;,然后你照做,画面确实变亮了。
+但很少有人问:为什么是这几根滑块?
+为什么白平衡只有两根而不是三根?为什么曲线面板底下要专门放一根叫&#34;精修饱和度&#34;的东西?为什么相机校准里会突然冒出一个只管暗部的滑块?为什么所有教程都说&#34;先调曝光再调色&#34;——这是习惯,还是有别的原因?
+这篇文章想说明的是:每一根滑块都不是设计师随手放的,它们各自在解决一个具体的问题。 而这些问题往上追,最后会追到同一个地方——人的眼睛。
+看懂了这条链路,你不需要背任何参数。
+第一部分 · 颜色是什么 1. 「三」是眼睛的数字,不是光的数字 先破除一个最常见的误解。
+太阳光里有无穷多种波长,光谱是连续的,红到紫之间没有任何断点。所以&#34;世界上有三种基本的颜色&#34;这句话,在物理上是错的。
+那三从哪来?
+从眼睛来。人的视网膜上只有三种视锥细胞,分别对短、中、长波长敏感。任何射进眼睛的光,不管成分多复杂,最后都被压缩成这三个细胞的三个信号值。
+这个压缩是不可逆的。两束成分完全不同的光,只要三个信号值相同,你就看成同一个颜色——这叫同色异谱,也是所有显示技术能成立的根本原因。
+屏幕只用三种灯就能骗过你,是因为它只需要凑对三个数。
+光做加法 屏幕上每个像素是三颗自己发光的灯。舞台底色是黑的,因为黑就是&#34;没有光&#34;。每往上推一格,就是往画面里注入一份光。
+加法滑块 = 光的强度">
+  <meta property="og:locale" content="en_gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-07-22T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-07-22T00:00:00+00:00">
+    <meta property="article:tag" content="摄影">
+    <meta property="article:tag" content="英语">
+    <meta property="article:tag" content="中文">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="成色原理&Lightroom调色研究">
+  <meta name="twitter:description" content="想在具体进入lumen-nuro 项目之前先介绍下基本的成色原理, 以及通过lightroom来介绍调色的逻辑 这篇文章不会牵扯过多的胶片的内容, 但会在之后的文章里解说 作者:Weiyi | 项目仓库:github.com/Waye/Lumen-Neuro | 状态:M2 完成(2026-06-02, commit dd3cba1),arXiv 预印包就绪
+序:先问一个奇怪的问题 打开 Lightroom,你会看到几十根滑块。大部分教程会告诉你&#34;这根往右拉画面变亮&#34;,然后你照做,画面确实变亮了。
+但很少有人问:为什么是这几根滑块?
+为什么白平衡只有两根而不是三根?为什么曲线面板底下要专门放一根叫&#34;精修饱和度&#34;的东西?为什么相机校准里会突然冒出一个只管暗部的滑块?为什么所有教程都说&#34;先调曝光再调色&#34;——这是习惯,还是有别的原因?
+这篇文章想说明的是:每一根滑块都不是设计师随手放的,它们各自在解决一个具体的问题。 而这些问题往上追,最后会追到同一个地方——人的眼睛。
+看懂了这条链路,你不需要背任何参数。
+第一部分 · 颜色是什么 1. 「三」是眼睛的数字,不是光的数字 先破除一个最常见的误解。
+太阳光里有无穷多种波长,光谱是连续的,红到紫之间没有任何断点。所以&#34;世界上有三种基本的颜色&#34;这句话,在物理上是错的。
+那三从哪来?
+从眼睛来。人的视网膜上只有三种视锥细胞,分别对短、中、长波长敏感。任何射进眼睛的光,不管成分多复杂,最后都被压缩成这三个细胞的三个信号值。
+这个压缩是不可逆的。两束成分完全不同的光,只要三个信号值相同,你就看成同一个颜色——这叫同色异谱,也是所有显示技术能成立的根本原因。
+屏幕只用三种灯就能骗过你,是因为它只需要凑对三个数。
+光做加法 屏幕上每个像素是三颗自己发光的灯。舞台底色是黑的,因为黑就是&#34;没有光&#34;。每往上推一格,就是往画面里注入一份光。
+加法滑块 = 光的强度">
+
+
+    
+
+    <link rel="canonical" href="http://localhost:1313/posts/cmy-rgb-lr-research/index-1/"><script>
+    (function(){try{
+      var c=sessionStorage.getItem("waveReveal");
+      if(!c)return;
+      if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){sessionStorage.removeItem("waveReveal");return;}
+      var d=document.documentElement;d.style.setProperty("--wave-color",c);d.classList.add("wave-incoming");
+    }catch(e){}})();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,400;1,500;1,600&family=Noto+Serif:ital,wght@0,400;0,600;1,400&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="/style.min.bf51c2957dffe7f025bb13dd2617c3568a4837ae36d072eba2dbb17330b37d5f.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    
+</head>
+<body data-theme="auto" class="notransition">
+
+<script src="/js/scheme.js"></script>
+
+<div class="page-shell">
+            <aside class="home-rail page-rail">
+                <div class="rail-top">
+  <a href="http://localhost:1313/" class="rail-logo" aria-label="Home">
+    <span class="rail-dot" aria-hidden="true"></span>
+    <span class="rail-brand">weiyi Hu</span>
+  </a>
+  <div class="rail-colorname" id="rail-colorname" aria-hidden="true">
+    <span class="cn-kanji">蒸栗</span>
+    <span class="cn-romaji">MUSHIKURI</span>
+  </div>
+</div>
+<div class="rail-nav">
+  <nav class="cat-blocks" aria-label="Sections"><a class="cat-block cat-bengara" href="/">
+    <span class="cat-name">Home</span></a><a class="cat-block cat-ai" href="/posts/">
+    <span class="cat-name">Posts</span></a><a class="cat-block cat-koke" href="/map/">
+    <span class="cat-name">Travel</span></a><a class="cat-block cat-kincha" href="/gallery/">
+    <span class="cat-name">Gallery</span></a><a class="cat-block cat-bengara" href="/pages/about/">
+    <span class="cat-name">About</span></a></nav>
+</div>
+
+            </aside>
+            <div class="page-body">
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">成色原理&amp;Lightroom调色研究</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2026-07-22T00:00:00&#43;00:00" itemprop="datePublished"> 22 Jul 2026 </time>
+                </div>
+                
+            </header>
+            
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>Table of Contents</b></summary>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#序先问一个奇怪的问题">序:先问一个奇怪的问题</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#1-三是眼睛的数字不是光的数字">1. 「三」是眼睛的数字,不是光的数字</a>
+      <ul>
+        <li><a href="#光做加法">光做加法</a></li>
+        <li><a href="#颜料做减法">颜料做减法</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-同一个颜色两个地址">2. 同一个颜色,两个地址</a></li>
+    <li><a href="#3-发现史每一步都只对了一半">3. 发现史:每一步都只对了一半</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#4-万能钥匙">4. 万能钥匙</a></li>
+    <li><a href="#5-管线为什么顺序不能乱">5. 管线:为什么顺序不能乱</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#6-白平衡先把尺子校准">6. 白平衡:先把尺子校准</a>
+      <ul>
+        <li><a href="#问题">问题</a></li>
+        <li><a href="#设计">设计</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#为什么只要两根滑块">为什么只要两根滑块</a></li>
+        <li><a href="#为什么是蓝-黄和绿-品红">为什么是蓝-黄和绿-品红</a></li>
+        <li><a href="#一个不算巧合的巧合">一个不算巧合的巧合</a></li>
+        <li><a href="#代价">代价</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-color-calibration改红这个字的定义">7. Color Calibration:改&quot;红&quot;这个字的定义</a>
+      <ul>
+        <li><a href="#问题-1">问题</a></li>
+        <li><a href="#设计-1">设计</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#那为什么不合并成一个矩阵">那为什么不合并成一个矩阵?</a></li>
+        <li><a href="#为什么面板顶上会有一个-shadows-tint">为什么面板顶上会有一个 Shadows Tint</a></li>
+      </ul>
+    </li>
+    <li><a href="#beginbmatrix-r--g--b-endbmatrix-2">$$
+\begin{bmatrix} R \ G \ B \end{bmatrix}</a>
+      <ul>
+        <li><a href="#为什么只有绿-品红一个方向">为什么只有绿-品红一个方向</a></li>
+        <li><a href="#三种运算三种误差">三种运算,三种误差</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#8-light-面板让三个数字一起变">8. Light 面板:让三个数字一起变</a>
+      <ul>
+        <li><a href="#exposure最纯粹的一个操作">Exposure:最纯粹的一个操作</a></li>
+        <li><a href="#contrast一个躲不掉的副作用">Contrast:一个躲不掉的副作用</a></li>
+        <li><a href="#四根分区滑块">四根分区滑块</a></li>
+      </ul>
+    </li>
+    <li><a href="#9-curve精细版的明暗控制">9. Curve:精细版的明暗控制</a>
+      <ul>
+        <li><a href="#-主曲线">① 主曲线</a></li>
+        <li><a href="#-三条单通道曲线">②③④ 三条单通道曲线</a></li>
+        <li><a href="#-参数曲线">⑤ 参数曲线</a></li>
+        <li><a href="#那个准星">那个准星</a></li>
+        <li><a href="#三个立刻能用的手法">三个立刻能用的手法</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#10-color-mixer按色相切">10. Color Mixer:按色相切</a>
+      <ul>
+        <li><a href="#问题-2">问题</a></li>
+        <li><a href="#设计-2">设计</a></li>
+        <li><a href="#为什么八个带的间距不均匀">为什么八个带的间距不均匀</a></li>
+        <li><a href="#怎么判断一个颜色归谁管">怎么判断一个颜色归谁管</a></li>
+        <li><a href="#代价卡在两带之间时做不到隔离">代价:卡在两带之间时,做不到隔离</a></li>
+      </ul>
+    </li>
+    <li><a href="#11-color-grading按亮度切">11. Color Grading:按亮度切</a>
+      <ul>
+        <li><a href="#问题-3">问题</a></li>
+        <li><a href="#设计-3">设计</a></li>
+        <li><a href="#balance-和-blending">Balance 和 Blending</a></li>
+        <li><a href="#它是滤镜吗">它是滤镜吗?</a></li>
+        <li><a href="#三个面板的分工">三个面板的分工</a></li>
+      </ul>
+    </li>
+    <li><a href="#12-饱和度-vs-自然饱和度">12. 饱和度 vs 自然饱和度</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#13-局部对比一类完全不同的操作">13. 局部对比:一类完全不同的操作</a></li>
+    <li><a href="#14-晕影与颗粒模拟物理介质">14. 晕影与颗粒:模拟物理介质</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#15-万能预设为什么会失败">15. 万能预设为什么会失败</a></li>
+    <li><a href="#16-先归一化再统一">16. 先归一化,再统一</a></li>
+    <li><a href="#17-人类到底喜欢什么">17. 人类到底喜欢什么</a>
+      <ul>
+        <li><a href="#规律一暖高光--冷暗部">规律一:暖高光 + 冷暗部</a></li>
+        <li><a href="#规律二远处更淡更冷">规律二:远处更淡、更冷</a></li>
+        <li><a href="#规律三记忆色不能越界">规律三:记忆色不能越界</a></li>
+        <li><a href="#规律四蓝色确实占便宜">规律四:蓝色确实占便宜</a></li>
+        <li><a href="#为什么这些规律有效">为什么这些规律有效</a></li>
+      </ul>
+    </li>
+    <li><a href="#18-一个可操作的通用底子">18. 一个可操作的&quot;通用底子&quot;</a>
+      <ul>
+        <li><a href="#顺带一句最强的调色发生在按快门之前">顺带一句:最强的调色发生在按快门之前</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#下一篇那么胶片到底是什么">下一篇:那么,胶片到底是什么?</a></li>
+  </ul>
+</nav>
+    </details>
+            <div class="page-content">
+                <blockquote>
+<p>想在具体进入lumen-nuro 项目之前先介绍下基本的成色原理, 以及通过lightroom来介绍调色的逻辑
+这篇文章不会牵扯过多的胶片的内容, 但会在之后的文章里解说
+作者:Weiyi | 项目仓库:<code>github.com/Waye/Lumen-Neuro</code> | 状态:M2 完成(2026-06-02, commit dd3cba1),arXiv 预印包就绪</p></blockquote>
+<h2 id="序先问一个奇怪的问题">序:先问一个奇怪的问题</h2>
+<p>打开 Lightroom,你会看到几十根滑块。大部分教程会告诉你&quot;这根往右拉画面变亮&quot;,然后你照做,画面确实变亮了。</p>
+<p>但很少有人问:<strong>为什么是这几根滑块?</strong></p>
+<p>为什么白平衡只有两根而不是三根?为什么曲线面板底下要专门放一根叫&quot;精修饱和度&quot;的东西?为什么相机校准里会突然冒出一个只管暗部的滑块?为什么所有教程都说&quot;先调曝光再调色&quot;——这是习惯,还是有别的原因?</p>
+<p>这篇文章想说明的是:<strong>每一根滑块都不是设计师随手放的,它们各自在解决一个具体的问题。</strong> 而这些问题往上追,最后会追到同一个地方——人的眼睛。</p>
+<p>看懂了这条链路,你不需要背任何参数。</p>
+<hr>
+<h1 id="第一部分--颜色是什么">第一部分 · 颜色是什么</h1>
+<h2 id="1-三是眼睛的数字不是光的数字">1. 「三」是眼睛的数字,不是光的数字</h2>
+<p>先破除一个最常见的误解。</p>
+<p>太阳光里有无穷多种波长,光谱是<strong>连续</strong>的,红到紫之间没有任何断点。所以&quot;世界上有三种基本的颜色&quot;这句话,在物理上是<strong>错的</strong>。</p>
+<p>那三从哪来?</p>
+<p>从眼睛来。人的视网膜上只有<strong>三种视锥细胞</strong>,分别对短、中、长波长敏感。任何射进眼睛的光,不管成分多复杂,最后都被压缩成这三个细胞的三个信号值。</p>
+<p>这个压缩是不可逆的。两束成分完全不同的光,只要三个信号值相同,你就看成同一个颜色——这叫<strong>同色异谱</strong>,也是所有显示技术能成立的根本原因。</p>
+<p><strong>屏幕只用三种灯就能骗过你,是因为它只需要凑对三个数。</strong></p>
+<h3 id="光做加法">光做加法</h3>
+<p>屏幕上每个像素是三颗自己发光的灯。舞台底色是黑的,因为黑就是&quot;没有光&quot;。每往上推一格,就是往画面里注入一份光。</p>
+<style>
+.demo{margin:2.5rem 0;border:1px solid var(--hairline,#e2ded5)}
+.demo-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,230px);gap:26px;padding:1.5rem}
+.demo-stage{position:relative;min-height:200px}
+.demo-panel{align-self:center}
+.demo-row{margin-bottom:12px}
+.demo-lab{display:block;font-size:.85rem;color:var(--ink-muted,#6b6760);margin-bottom:3px}
+.demo-ctl{display:flex;align-items:center;gap:10px}
+.demo-ctl input[type=range]{flex:1;accent-color:var(--bengara,#9d3b2f)}
+.demo-num{font-size:.82rem;font-variant-numeric:tabular-nums;min-width:34px;text-align:right;color:var(--ink,#26231e)}
+.demo-sel{width:100%;padding:.4rem;font:inherit;font-size:.85rem;color:var(--ink,#26231e);background:transparent;border:1px solid var(--hairline,#e2ded5)}
+.demo-chk{margin-right:.45rem;accent-color:var(--bengara,#9d3b2f)}
+.demo-btn{width:100%;margin-bottom:8px;padding:.5rem .8rem;font:inherit;font-size:.88rem;color:var(--ink-muted,#6b6760);background:transparent;border:1px solid var(--hairline,#e2ded5);cursor:pointer;transition:color .18s ease,border-color .18s ease}
+.demo-btn:hover{color:var(--bengara,#9d3b2f);border-color:var(--bengara,#9d3b2f)}
+.demo-cap{padding:0 1.5rem 1.2rem;font-size:.85rem;color:var(--ink-muted,#6b6760)}
+.demo-code{border-top:1px solid var(--hairline,#e2ded5)}
+.demo-code>summary{padding:.7rem 1.5rem;font-size:.82rem;color:var(--ink-muted,#6b6760);cursor:pointer;list-style:none}
+.demo-code>summary::-webkit-details-marker{display:none}
+.demo-code>summary::before{content:"▸ ";transition:transform .18s ease}
+.demo-code[open]>summary::before{content:"▾ "}
+.demo-code>summary:hover{color:var(--bengara,#9d3b2f)}
+.demo-code pre{margin:0;padding:0 1.5rem 1.2rem;overflow-x:auto;font-size:.8rem;line-height:1.55}
+@media(max-width:640px){.demo-body{grid-template-columns:1fr;gap:18px}}
+</style><div class="demo">
+  <div data-demo="color-add"></div><p class="demo-cap">加法滑块 = 光的强度</p>
+</div>
+<script src="/js/demo-color-add.js" defer></script>
+
+<p>三盏全开,所有波长齐了,就是白光。</p>
+<h3 id="颜料做减法">颜料做减法</h3>
+<p>颜料反过来。白纸把所有波长都反射回来,所以底色是白的。每加一层颜料,就从这束白光里<strong>吃掉</strong>一段波长:</p>
+<table>
+  <thead>
+      <tr>
+          <th>颜料</th>
+          <th>吸收什么</th>
+          <th>也就是关掉哪个通道</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>青 C</td>
+          <td>红光</td>
+          <td>R</td>
+      </tr>
+      <tr>
+          <td>品红 M</td>
+          <td>绿光</td>
+          <td>G</td>
+      </tr>
+      <tr>
+          <td>黄 Y</td>
+          <td>蓝光</td>
+          <td>B</td>
+      </tr>
+  </tbody>
+</table>
+<div class="demo">
+  <div data-demo="color-sub"></div><p class="demo-cap">减法滑块 = 颜料的浓度</p>
+</div>
+<script src="/js/demo-color-sub.js" defer></script>
+
+<p>三色叠满,三段波长全被吸收,接近黑。</p>
+<p>说&quot;接近&quot;是因为真实油墨做不到完美吸收,CMY 叠满出来是浑浊的深褐色——所以印刷才要额外加一版黑墨,凑成 CMYK 的 K。</p>
+<p><strong>美术课的&quot;蓝加黄等于绿&quot;和物理课的&quot;蓝光加黄光等于白光&quot;,两句话都对。</strong> 它们根本是两种不同的操作。这个矛盾在历史上让人吵了一百多年。</p>
+<h2 id="2-同一个颜色两个地址">2. 同一个颜色,两个地址</h2>
+<p>RGB 不是描述颜色的唯一方式。</p>
+<p>RGB 像直角坐标——三条边定位一个点。而 HSL 把同一个空间掰成圆柱:<strong>色相是绕轴的角度,饱和度是离中轴的距离,明度是高度。</strong></p>
+<div class="demo">
+  <div data-demo="rgb-hsl"></div><p class="demo-cap">拖左边任意一根，右边跟着动；反过来也一样。两组数字始终指向同一个色块——<strong>它们不是两种颜色，是同一个颜色的两种写法</strong>。</p>
+</div>
+<script src="/js/demo-rgb-hsl.js" defer></script>
+
+<p><strong>为什么要有两套坐标?</strong> 因为有些操作在一套里简单,在另一套里几乎做不到。</p>
+<p>想把颜色整体&quot;转个方向&quot;,在 HSL 里就是拖一根滑块;在 RGB 里你得同时算三个数,而且算出来的关系毫无规律。反过来,想让画面整体变亮,RGB 里三个数一起乘就行。</p>
+<p>两套坐标没有优劣。<strong>Lightroom 的不同面板选了不同的坐标——选哪一套,取决于那个面板想解决什么问题。</strong></p>
+<p>试试把饱和度拖到 0——点会滑到中轴上,那条从黑到白的灰轴。再把明度拖到 0 或 100,整圈色环会塌成全黑或全白:在圆柱的顶和底,所有色相和饱和度的组合都指向同一个颜色,坐标全浪费了。<strong>这是 HSL 最大的结构缺陷</strong>,后面还会遇到它。</p>
+<h2 id="3-发现史每一步都只对了一半">3. 发现史:每一步都只对了一半</h2>
+<p>&ldquo;三是眼睛的数字&quot;这个结论,人类花了三百年才得到,而且路上每一步都错了一半。</p>
+<table>
+  <thead>
+      <tr>
+          <th>年份</th>
+          <th>发现了什么</th>
+          <th>同时错在哪</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>1666 牛顿</td>
+          <td>白光是复合的;颜色不在光里,是一种感觉</td>
+          <td>硬凑成七色去对应音阶;认为每个波长同样基本,没得出「三」</td>
+      </tr>
+      <tr>
+          <td>1720s 勒布隆</td>
+          <td>三色套印可行;察觉颜料与光的方向相反</td>
+          <td>选了红黄蓝;说不出为什么,矛盾悬置一百年</td>
+      </tr>
+      <tr>
+          <td>1801 杨</td>
+          <td>视网膜不可能对应无穷波长,必然只有少数通道——推断是三种</td>
+          <td>纯推理,零证据;原色先猜红黄蓝,后改红绿紫,两次都不准</td>
+      </tr>
+      <tr>
+          <td>1850s 亥姆霍兹</td>
+          <td>加法与减法正式分家:颜料做减法,光做加法</td>
+          <td>三色理论解释不了残像,也说不清为何没有「偏红的绿」</td>
+      </tr>
+      <tr>
+          <td>1860s 赫林</td>
+          <td>补上对立过程理论,红-绿、蓝-黄成对拮抗</td>
+          <td>与三色说互斥了几十年,后来才知两者是视觉的前后两级</td>
+      </tr>
+      <tr>
+          <td>1861 麦克斯韦</td>
+          <td>色度可量化;拍出第一张彩色照片</td>
+          <td>当时乳剂对红光不敏感,红色底片本不该成像——1961 年才查明是紫外线撞了大运</td>
+      </tr>
+      <tr>
+          <td>1868 杜奥隆</td>
+          <td>提出 CMY,各自吃掉一个 RGB 通道</td>
+          <td>印刷业仍沿用红黄蓝几十年,色域白白窄了一截</td>
+      </tr>
+      <tr>
+          <td>1964</td>
+          <td>显微分光光度计首次测到三种视锥细胞</td>
+          <td>距杨的推理已隔 163 年</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>最大的错误其实是同一个:</strong> 从牛顿到勒布隆,所有人都在问「光里有什么」。1801 年托马斯·杨把问题改成「眼睛能分辨什么」,答案才浮出来。</p>
+<p>他的推理很漂亮,而且完全没有实验:光谱波长有无穷多种,视网膜不可能为每一种准备一种细胞,生理上做不到。但人只用三种光就能配出几乎所有颜色——<strong>说明接收端的通道数很少。</strong> 他猜是三个。</p>
+<p>一百六十三年后,显微镜才证实了他。</p>
+<p>至于为什么偏偏是 R、G、B——<strong>通道数是眼睛定的,选哪三种光则纯属工程取舍</strong>:挑三个分得够开的波长,把色域三角形撑到最大。狗只有两种锥细胞,鸟有四种,它们的答案和我们完全不同。</p>
+<hr>
+<h1 id="第二部分--一张照片就是一堆三个数字">第二部分 · 一张照片就是一堆三个数字</h1>
+<h2 id="4-万能钥匙">4. 万能钥匙</h2>
+<p>屏幕上每个像素点,说到底只是三个数字:红多少、绿多少、蓝多少,每个从 0 到 255。</p>
+<p><code>(255, 0, 0)</code> 是纯红,<code>(0, 0, 0)</code> 是黑,<code>(255, 255, 255)</code> 是白。一张 2400 万像素的照片,就是 2400 万组这样的三个数字。</p>
+<p><strong>所以「修图」这件事,本质上只有一件事:按某种规则去改这三个数字。</strong></p>
+<p><img src="three_basic_rgb_operations.png" alt="三种基本操作示意"></p>
+<p>而所有规则,归根到底只有三种基本玩法:</p>
+<table>
+  <thead>
+      <tr>
+          <th>三个数字的…</th>
+          <th>决定了</th>
+          <th>对应 HSL 里的</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>平均高度</td>
+          <td>明暗</td>
+          <td>L 明度</td>
+      </tr>
+      <tr>
+          <td>最大和最小的差距</td>
+          <td>鲜艳程度</td>
+          <td>S 饱和度</td>
+      </tr>
+      <tr>
+          <td>谁大谁小的排序</td>
+          <td>是什么颜色</td>
+          <td>H 色相</td>
+      </tr>
+  </tbody>
+</table>
+<p>这三条不是比喻,是能写成式子的。设三个数里最大的是 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi></mrow><annotation encoding="application/x-tex">M</annotation></semantics></math></span>、最小的是 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi></mrow><annotation encoding="application/x-tex">m</annotation></semantics></math></span>:</p>
+<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>L</mi><mo>=</mo><mfrac><mrow><mi>M</mi><mo>+</mo><mi>m</mi></mrow><mn>2</mn></mfrac><mspace width="2em"/><mi>S</mi><mo>∝</mo><mfrac><mrow><mi>M</mi><mo>−</mo><mi>m</mi></mrow><mrow><mi>M</mi><mo>+</mo><mi>m</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+L = \frac{M + m}{2}
+\qquad
+S \propto \frac{M - m}{M + m}
+</annotation></semantics></math></span><p>明度就是最大和最小的中点;饱和度正比于两者的差距——除以总量,是为了让明暗不影响它。</p>
+<p><strong>差距为 0 时分子是 0,饱和度就是 0——那就是灰色。</strong> 这就是为什么灰色&quot;没有颜色&rdquo;:三个通道完全相等,分不出谁多谁少,连&quot;是什么颜色&quot;这个问题都无从问起。</p>
+<blockquote>
+<p>记住这把钥匙。下面每个面板,你都只需要问一句:<strong>它在动哪一样?</strong></p></blockquote>
+<h2 id="5-管线为什么顺序不能乱">5. 管线:为什么顺序不能乱</h2>
+<p>在拆面板之前,还有一件事必须先讲——<strong>Lightroom 面板在界面上的排列顺序,不是它们的执行顺序。</strong></p>
+<p>它是非破坏性的:你调的每根滑块都只是往一张&quot;指令单&quot;上记一笔,原始文件一个字节都没动。真正渲染时,按下面这条固定管线跑一遍:</p>
+<p><img src="lr_render_pipeline.png" alt="lR流程图"></p>
+<p><strong>为什么必须是这个顺序?</strong> 三条理由,一条比一条重要。</p>
+<p><strong>① 先校准,再动手。</strong> 白平衡和相机校准是在确定&quot;这些数字到底代表什么颜色&quot;。这就像做实验前要先校准仪器——标准不对,后面所有测量都是错的。</p>
+<p><strong>② 先明暗,再颜色。</strong> 这条是硬约束,而且有数学原因。</p>
+<p>后面会证明:<strong>改明暗会顺带改变饱和度</strong>(因为三个数字被拉开了)。所以顺序只能是:</p>
+<blockquote>
+<p>先把明暗定下来 → 此时颜色已经被顺带改动了 → 再调颜色,把它修到你想要的样子</p></blockquote>
+<p>如果反过来——先精心调好颜色,再去动曝光和对比度——刚调好的颜色会被破坏一遍,等于白做。</p>
+<p><strong>所有修图教程都说&quot;先调曝光再调色&quot;,这不是习惯,是数学上的先后依赖。</strong></p>
+<p><strong>③ 装饰放最后。</strong> 晕影模拟的是镜头暗角,颗粒模拟的是胶片质感,它们都属于&quot;拍摄时就存在的物理现象&quot;。放在中间的话,后面的曲线会把晕影再加深一遍,锐化会把颗粒放大成噪点。</p>
+<p>下面就按这条管线的顺序走一遍。</p>
+<hr>
+<h1 id="第三部分--还原真相管线上游">第三部分 · 还原真相(管线上游)</h1>
+<p>管线最上游那几个工具有个共同点:<strong>它们做的都不是创作,是修错。</strong></p>
+<p>要修的错有三个来源——光源不对、相机不准、传感器有毛病。而它们各自需要一种<strong>不同的数学运算</strong>。</p>
+<h2 id="6-白平衡先把尺子校准">6. 白平衡:先把尺子校准</h2>
+<style>
+.gal{display:grid;grid-template-columns:repeat(var(--gal-cols),minmax(0,1fr));gap:var(--gal-gap);margin:2rem 0;align-items:start}
+.gal figure{margin:0;min-width:0}
+.gal img{display:block;width:100%;height:auto;border:1px solid var(--hairline,#e2ded5)}
+.gal figcaption{margin-top:.45rem;font-size:.75rem;line-height:1.5;text-align:center;color:var(--ink-muted,#6b6760)}
+@media(max-width:640px){.gal{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style><div class="gal" style="--gal-cols:2;--gal-gap:10px"><figure><img src="/wb.png" alt="" loading="lazy"></figure></div>
+
+<h3 id="问题">问题</h3>
+<p>相机拍下的三个数字,严重依赖当时的光线。同一张白纸,黄昏灯光下拍红色数字偏高,阴天拍蓝色数字偏高。</p>
+<p><strong>如果尺子本身是歪的,后面量什么都不准。</strong></p>
+<h3 id="设计">设计</h3>
+<p>白平衡做的事很简单:<strong>给三个数字各乘一个系数</strong>,让本该是白色的东西重新变回中性。</p>
+<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>R</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>=</mo><msub><mi>k</mi><mi>R</mi></msub><mo>⋅</mo><mi>R</mi><mo separator="true">,</mo><mspace width="1em"/><msup><mi>G</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>=</mo><msub><mi>k</mi><mi>G</mi></msub><mo>⋅</mo><mi>G</mi><mo separator="true">,</mo><mspace width="1em"/><msup><mi>B</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>=</mo><msub><mi>k</mi><mi>B</mi></msub><mo>⋅</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">
+R&#x27; = k_R\cdot R,\quad G&#x27; = k_G\cdot G,\quad B&#x27; = k_B\cdot B
+</annotation></semantics></math></span><p>写成矩阵会更清楚:</p>
+<h1 id="beginbmatrix-r--g--b-endbmatrix">$$
+\begin{bmatrix} R&rsquo; \ G&rsquo; \ B&rsquo; \end{bmatrix}</h1>
+<p>\begin{bmatrix}
+k_R &amp; 0 &amp; 0 \
+0 &amp; k_G &amp; 0 \
+0 &amp; 0 &amp; k_B
+\end{bmatrix}
+\begin{bmatrix} R \ G \ B \end{bmatrix}
+$$</p>
+<p><strong>注意非对角线上全是 0。</strong> 这个形式叫对角矩阵,含义是:红只影响红,绿只影响绿,<strong>通道之间没有任何串扰</strong>。记住这一点,下一节马上会用到。</p>
+<p>目标是让中性灰物体成像后满足 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>=</mo><msup><mi>G</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>=</mo><msup><mi>B</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><annotation encoding="application/x-tex">R&#x27; = G&#x27; = B&#x27;</annotation></semantics></math></span>。</p>
+<h3 id="为什么只要两根滑块">为什么只要两根滑块</h3>
+<p>看起来明明是三个未知数 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mi>R</mi></msub><mo separator="true">,</mo><mtext> </mtext><msub><mi>k</mi><mi>G</mi></msub><mo separator="true">,</mo><mtext> </mtext><msub><mi>k</mi><mi>B</mi></msub></mrow><annotation encoding="application/x-tex">k_R,\, k_G,\, k_B</annotation></semantics></math></span>,为什么界面上只给两根滑块?</p>
+<p><strong>因为存在一个约束:整体亮度缩放不影响色彩。</strong></p>
+<p>假设把三个增益同时乘以常数 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi></mrow><annotation encoding="application/x-tex">s</annotation></semantics></math></span>:</p>
+<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">(</mo><mi>s</mi><mtext> </mtext><msub><mi>k</mi><mi>R</mi></msub><mo separator="true">,</mo><mtext> </mtext><mi>s</mi><mtext> </mtext><msub><mi>k</mi><mi>G</mi></msub><mo separator="true">,</mo><mtext> </mtext><mi>s</mi><mtext> </mtext><msub><mi>k</mi><mi>B</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">
+(s\,k_R,\ s\,k_G,\ s\,k_B)
+</annotation></semantics></math></span><p>三个数的<strong>比例完全没变</strong>,只是一起变大了。画面整体变亮或变暗,但&quot;偏不偏色&quot;这件事一点没动。而整体明暗已经交给曝光滑块管了。</p>
+<p>所以三个增益里有一个维度是白给的:</p>
+<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mn>3</mn><mtext> 个通道增益</mtext><mo>−</mo><mn>1</mn><mtext> 个亮度维度</mtext><mo>=</mo><mn>2</mn><mtext> 个独立色彩自由度</mtext></mrow><annotation encoding="application/x-tex">
+3\ \text{个通道增益} - 1\ \text{个亮度维度} = 2\ \text{个独立色彩自由度}
+</annotation></semantics></math></span><blockquote>
+<p>用数学的话说:三维向量空间里,如果只关心<strong>方向</strong>不关心<strong>长度</strong>,自由度就只剩二维。</p></blockquote>
+<p>顺带一提,Photoshop 的&quot;色彩平衡&quot;给了<strong>三根</strong>滑块(青-红、品红-绿、黄-蓝)。看着更全面,其实是冗余的——三根同时拉满,颜色回到原点,只是画面变亮或变暗了。三根里只有两根是独立的。<strong>Lightroom 只给两根,是更诚实的设计。</strong></p>
+<h3 id="为什么是蓝-黄和绿-品红">为什么是蓝-黄和绿-品红</h3>
+<p>两个独立方向,任选两个不平行的就行。为什么偏偏是这两个?</p>
+<p><strong>因为现实世界的光就是这么分布的。</strong></p>
+<p>人类用的光,基本都是&quot;把东西烧热&quot;得来的。任何物体加热后发光的颜色只跟温度有关:红 → 橙 → 黄 → 白 → 蓝白。蜡烛 1800K、白炽灯 2700K、日光 5500K、阴天 7000K、蓝天 10000K——<strong>全都在这一条线上</strong>。</p>
+<p>这就是 Temp 轴。它对应一个真实的物理量,所以单位是开尔文。</p>
+<p>但有些光不是烧出来的——荧光灯、部分 LED 靠气体放电发光,光谱带尖峰,会明显偏绿;水下和树荫下的光也偏绿。这些光源落在色温轴之外,而它们偏离的方向恰好是<strong>绿-品红</strong>。</p>
+<p>这就是 Tint 轴。它没有物理单位,因为它只是&quot;偏离了多少&quot;。</p>
+<table>
+  <thead>
+      <tr>
+          <th>滑块</th>
+          <th>通道层面在做什么</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Temp</strong> 蓝↔黄</td>
+          <td>把 B 和 R+G 对着拉</td>
+      </tr>
+      <tr>
+          <td><strong>Tint</strong> 绿↔品红</td>
+          <td>把 G 和 R+B 对着拉</td>
+      </tr>
+  </tbody>
+</table>
+<p>为什么黄色对应&quot;R+G&quot;?因为黄光就是红光加绿光——回想加法混色那个 demo,红圈和绿圈的重叠区正是黄色。所以**&ldquo;加黄&quot;和&quot;减蓝&quot;是同一个操作**。同理品红是红加蓝,&ldquo;加品红 = 减绿&rdquo;。</p>
+<p>任何中性光源的色偏,都能分解到这两个轴上:</p>
+<ul>
+<li>偏橙 = 往黄 + 少量品红</li>
+<li>偏青 = 往蓝 + 少量绿</li>
+<li>偏紫 = 往蓝 + 少量品红</li>
+</ul>
+<p><strong>不存在一种色偏,是 Temp + Tint 组合模拟不出来的。</strong></p>
+<h3 id="一个不算巧合的巧合">一个不算巧合的巧合</h3>
+<p>现代色彩科学最常用的 Lab 空间,两个颜色轴是 <strong>绿↔红品</strong> 和 <strong>蓝↔黄</strong>——和 Tint / Temp 完全重合。</p>
+<p>而 Lab 这么定,是因为它照着人眼的<strong>对立处理机制</strong>设计:视锥细胞的三个信号在传给大脑之前,会先被重新编码成&quot;明暗&quot;&ldquo;红-绿&quot;&ldquo;蓝-黄&quot;三组对立信号。</p>
+<p>这也解释了一个日常现象:<strong>你能想象&quot;偏黄的绿&rdquo;,却想象不出&quot;偏黄的蓝&rdquo;</strong>——它们在同一根轴的两端,互斥。</p>
+<p>所以这两个轴同时满足三件事:数学上张满了颜色平面、对齐了真实光源的分布、对齐了人眼编码颜色的方式。</p>
+<p><strong>换任何两个别的方向,数学上都成立,但没有一个能同时满足后两条。</strong></p>
+<h3 id="代价">代价</h3>
+<p>白平衡只有两个自由度,它能做的事只有一件:<strong>把某一个颜色调成中性。</strong></p>
+<p>把灰卡调准了,不代表别的颜色就对了。这个局限,直接催生了下一个面板。</p>
+<h2 id="7-color-calibration改红这个字的定义">7. Color Calibration:改&quot;红&quot;这个字的定义</h2>
+<div class="gal" style="--gal-cols:2;--gal-gap:10px"><figure><img src="/color_calibration.png" alt="" loading="lazy"></figure></div>
+
+<h3 id="问题-1">问题</h3>
+<p>两台相机都把白纸拍成了标准白,但同一朵红玫瑰,A 相机拍出来偏橙,B 相机拍出来偏品红。</p>
+<p><strong>这个差异白平衡永远修不了。</strong></p>
+<p>为什么?因为要修它,你得让&quot;红的输出里掺一点蓝&rdquo;——而对角矩阵的那个位置是 0。</p>
+<h3 id="设计-1">设计</h3>
+<p>把矩阵填满:</p>
+<h1 id="beginbmatrix-r--g--b-endbmatrix-1">$$
+\begin{bmatrix} R&rsquo; \ G&rsquo; \ B&rsquo; \end{bmatrix}</h1>
+<p>\begin{bmatrix}
+m_{11} &amp; m_{12} &amp; m_{13} \
+m_{21} &amp; m_{22} &amp; m_{23} \
+m_{31} &amp; m_{32} &amp; m_{33}
+\end{bmatrix}
+\begin{bmatrix} R \ G \ B \end{bmatrix}
+$$</p>
+<p>非对角元素不为零,意思就是<strong>通道开始互相混合</strong>:输出的红里掺进了输入的绿和蓝。</p>
+<p>效果上,这等于挪动了色域三角形的三个顶点——也就是改变了&quot;红&quot;&ldquo;绿&quot;&ldquo;蓝&quot;这三个字的<strong>含义</strong>。面板上三组滑块叫 Red Primary / Green Primary / Blue Primary,措辞是刻意的:它们动的是<strong>原色</strong>,不是画面里的红色物体。</p>
+<p>自由度的差别很直观:</p>
+<table>
+  <thead>
+      <tr>
+          <th></th>
+          <th>自由度</th>
+          <th>能固定几个颜色</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>白平衡(对角)</td>
+          <td>2</td>
+          <td>一个(中性灰)</td>
+      </tr>
+      <tr>
+          <td>校准(满矩阵)</td>
+          <td>6–8</td>
+          <td>整个色彩空间</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>白平衡像是把地图整体平移,让一个地标对上;满矩阵是旋转加拉伸,让所有地标都对上。</strong></p>
+<p>因为它动的是根基,所以拉一点点整张图就大变样。</p>
+<h3 id="那为什么不合并成一个矩阵">那为什么不合并成一个矩阵?</h3>
+<p>数学上完全可以——两个矩阵相乘就是一个矩阵。分开是<strong>工作流的需要</strong>:</p>
+<ul>
+<li><strong>白平衡随每张照片变</strong>,取决于当时的光源。阴天一个值,室内白炽灯另一个值。</li>
+<li><strong>相机校准随相机固定</strong>,是这台机器的物理特性,配置文件里存一次就够了。</li>
+</ul>
+<p>合并了,你就得每张照片重新校准一遍相机。</p>
+<h3 id="为什么面板顶上会有一个-shadows-tint">为什么面板顶上会有一个 Shadows Tint</h3>
+<p>这是这个面板最令人困惑的地方:如果整个面板都在改原色定义,为什么会突然冒出一个只管暗部的滑块?</p>
+<p><strong>答案是:乘法修不了加法造成的误差。</strong></p>
+<p>传感器读数在完全没有光的时候也不是零,每个通道都有个微小的固定偏移(黑电平)。假设蓝通道偏移是 3、红是 1,那么在极暗的地方——信号本身只有个位数——这个差值就成了肉眼可见的色偏。</p>
+<p>关键在于:<strong>这个偏移是常数,不随信号强弱变化。</strong></p>
+<p>而白平衡和相机校准都是乘法。乘法只会把偏移一起放大:</p>
+<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>k</mi><mo>⋅</mo><mo stretchy="false">(</mo><mi>R</mi><mo>+</mo><mi>o</mi><mo stretchy="false">)</mo><mo>=</mo><mi>k</mi><mi>R</mi><mo>+</mo><mi>k</mi><mtext> </mtext><mi>o</mi></mrow><annotation encoding="application/x-tex">
+k \cdot (R + o) = k R + k\,o
+</annotation></semantics></math></span><p>那个 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mtext> </mtext><mi>o</mi></mrow><annotation encoding="application/x-tex">k\,o</annotation></semantics></math></span> 永远消不掉,还被放大了。要消掉它,只能用<strong>减法</strong>:</p>
+<h2 id="beginbmatrix-r--g--b-endbmatrix-2">$$
+\begin{bmatrix} R \ G \ B \end{bmatrix}</h2>
+<p>\begin{bmatrix} o_R \ o_G \ o_B \end{bmatrix}
+$$</p>
+<p>所以必须有一个加法控件。它出现在 Calibration 面板里,不是因为它和原色定义是一类东西,而是因为两者都属于&quot;修相机自身的毛病&rdquo;,在管线上处于同一个位置。</p>
+<h3 id="为什么只有绿-品红一个方向">为什么只有绿-品红一个方向</h3>
+<p>这个细节挺妙的。相机传感器用的是 Bayer 阵列,每四个像素里有<strong>两个绿、一个红、一个蓝</strong>。</p>
+<p>绿色是两个采样点平均出来的,红蓝各只有一个。<strong>采样数不同,噪声统计特性就不同</strong>,在深暗部这个差异被放大,表现出来正好落在绿-品红轴上。</p>
+<p>所以 Shadows Tint 只给了这一个方向,不是偷懒,是因为其他方向的偏差本来就不显著。</p>
+<h3 id="三种运算三种误差">三种运算,三种误差</h3>
+<div class="gal" style="--gal-cols:1;--gal-gap:10px"><figure><img src="/three_math_operations_offset_diagonal_full_matrix.svg" alt="" loading="lazy"></figure></div>
+
+<table>
+  <thead>
+      <tr>
+          <th>运算</th>
+          <th>面板</th>
+          <th>修什么</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>加法(偏移向量)</td>
+          <td>Shadows Tint</td>
+          <td>传感器黑电平</td>
+      </tr>
+      <tr>
+          <td>对角矩阵(缩放)</td>
+          <td>White Balance</td>
+          <td>光源色偏</td>
+      </tr>
+      <tr>
+          <td>满矩阵(混合)</td>
+          <td>Color Calibration</td>
+          <td>相机色彩性格</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>三种不同的数学,对应三种不同来源的误差,谁也替代不了谁。</strong></p>
+<p>这也是为什么它们全挤在管线最上游那一小段——它们做的都是&quot;还原真相&quot;的工作,而不是&quot;表达意图&quot;的工作。</p>
+<p>真正的创作,从下一部分才开始。</p>
+<hr>
+<h1 id="第四部分--调整明暗管线中游">第四部分 · 调整明暗(管线中游)</h1>
+<h2 id="8-light-面板让三个数字一起变">8. Light 面板:让三个数字一起变</h2>
+<div class="gal" style="--gal-cols:2;--gal-gap:10px"><figure><img src="/light.png" alt="light" loading="lazy"><figcaption>light</figcaption></figure></div>
+
+<h3 id="exposure最纯粹的一个操作">Exposure:最纯粹的一个操作</h3>
+<p>三个数字<strong>同时乘同一个数</strong>。乘 2 是亮一档,乘 0.5 是暗一档。</p>
+<p>为什么只变亮度、不变颜色?因为比例守恒:</p>
+<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi>k</mi><mi>R</mi></mrow><mrow><mi>k</mi><mi>G</mi></mrow></mfrac><mo>=</mo><mfrac><mi>R</mi><mi>G</mi></mfrac></mrow><annotation encoding="application/x-tex">
+\frac{k R}{k G} = \frac{R}{G}
+</annotation></semantics></math></span><p>三个数的<strong>排序没变、比例没变</strong>。按万能钥匙,色相和饱和度都不动,只有平均高度变了。</p>
+<p>顺带解释一个细节:曝光的单位是&quot;档&rdquo;(stop),这是个物理单位,说明它在做<strong>线性乘法</strong>;而同一面板里其他滑块都是无量纲的 ±100。<strong>单位不同,说明底下是两套数学。</strong></p>
+<h3 id="contrast一个躲不掉的副作用">Contrast:一个躲不掉的副作用</h3>
+<p>规则很朴素:本来就亮的变更亮,本来就暗的变更暗。</p>
+<p>但这里有个必须知道的连带效果:<strong>加对比度会让颜色变艳。</strong></p>
+<p>拿一个偏橙的像素 <code>(180, 120, 90)</code> 举例。加对比时,红最大所以被推得更高,蓝最小所以被压得更低:</p>
+<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">(</mo><mn>180</mn><mo separator="true">,</mo><mtext> </mtext><mn>120</mn><mo separator="true">,</mo><mtext> </mtext><mn>90</mn><mo stretchy="false">)</mo><mo>⟶</mo><mo stretchy="false">(</mo><mn>225</mn><mo separator="true">,</mo><mtext> </mtext><mn>120</mn><mo separator="true">,</mo><mtext> </mtext><mn>45</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">
+(180,\ 120,\ 90) \longrightarrow (225,\ 120,\ 45)
+</annotation></semantics></math></span><p>平均高度差不多,但<strong>最大和最小的差距从 90 拉到了 180</strong>。按万能钥匙,差距变大就是变艳。</p>
+<p><strong>这不是 bug,是数学上躲不掉的。</strong> 只要你对三个通道分别做&quot;拉开&quot;的操作,饱和度就一定跟着涨。</p>
+<p>而这个副作用,正是第 5 节说的&quot;先明暗后颜色&quot;的原因。</p>
+<h3 id="四根分区滑块">四根分区滑块</h3>
+<p>Highlights / Shadows / Whites / Blacks 是&quot;只管某个亮度区间&quot;的对比度。</p>
+<p>它们需要知道&quot;这个像素属于亮部还是暗部&quot;,所以底下几乎肯定有一张模糊后的亮度图当遮罩。<strong>这也解释了为什么 Shadows 拉太高会出现光晕</strong>——遮罩的边缘过渡不够细。</p>
+<h2 id="9-curve精细版的明暗控制">9. Curve:精细版的明暗控制</h2>
+<div class="gal" style="--gal-cols:2;--gal-gap:10px"><figure><img src="/curve.png" alt="" loading="lazy"></figure></div>
+
+<p>曲线就是一张&quot;输入 → 输出&quot;的对照表。横轴是原来的数字,纵轴是改完的数字。</p>
+<p>拉成 S 形,就是把亮的推更亮、暗的压更暗——也就是对比度,只是控制精度高得多。</p>
+<p>面板顶上有五个按钮,从左到右是:<strong>主曲线 → 红 → 绿 → 蓝 → 参数曲线</strong>。最右边那个准星是取样工具。</p>
+<h3 id="-主曲线">① 主曲线</h3>
+<p>它把<strong>同一条规则同时套给三个数字</strong>。</p>
+<p>注意不是&quot;只改亮度&quot;——是 R、G、B 各自按这条曲线查表。所以刚才那个副作用又来了:拉 S 形提对比,颜色会跟着变艳。</p>
+<p><strong>面板底下那根 <code>Refine Saturation</code>,就是给这件事擦屁股的。</strong></p>
+<p>这根滑块的存在本身就是一条线索。如果 Adobe 是只对亮度做曲线的,这个副作用根本不会发生,也就不需要一根滑块来修它。</p>
+<blockquote>
+<p><strong>一个通用的逆向思路:一个用来修副作用的控件,反证了副作用的成因。</strong>
+你在任何软件里看到&quot;打补丁型&quot;的选项,都可以反推主逻辑是怎么实现的。</p></blockquote>
+<h3 id="-三条单通道曲线">②③④ 三条单通道曲线</h3>
+<p><strong>这才是真正调色的地方。</strong> 只动一个数字,直接改变了三个数的排序和差距——也就是色相和饱和度。</p>
+<p>关键是每条曲线都是<strong>双向</strong>的:往上抬加它自己的颜色,往下压加它的互补色。</p>
+<p><img src="rgb_channel_curve.svg" alt="rgb_channel_curve"></p>
+<p>这里有个漂亮的呼应:<strong>蓝通道曲线就是 Temp 轴(蓝↔黄),绿通道曲线就是 Tint 轴(绿↔品红)</strong>——和白平衡完全一样的两个方向。</p>
+<p><strong>那区别在哪?</strong></p>
+<p>白平衡是<strong>全局</strong>的:整张图一起偏。曲线是<strong>分区域</strong>的:你可以让暗部偏蓝、亮部偏黄,同一张图里两个相反方向同时存在。</p>
+<p>这就是&quot;电影感&quot;调色的全部秘密。经典做法:</p>
+<blockquote>
+<p>蓝通道曲线,<strong>左端往上抬 + 右端往下压</strong></p></blockquote>
+<p>结果是阴影带青蓝、高光带暖黄。为什么好看?<strong>因为这模仿了现实</strong>——户外阴影里的光来自蓝天,高光来自暖色的太阳。第七部分会详细说这件事。</p>
+<h3 id="-参数曲线">⑤ 参数曲线</h3>
+<p>同样是主曲线,但换了操作方式:不给你自由拖点,改成四根滑块——高光 / 亮调 / 暗调 / 阴影。</p>
+<table>
+  <thead>
+      <tr>
+          <th></th>
+          <th>点曲线</th>
+          <th>参数曲线</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>自由度</td>
+          <td>任意造型</td>
+          <td>只能温和起伏</td>
+      </tr>
+      <tr>
+          <td>风险</td>
+          <td>能拉出断层、色偏</td>
+          <td>几乎不会翻车</td>
+      </tr>
+      <tr>
+          <td>适合</td>
+          <td>明确知道要什么</td>
+          <td>快速试探</td>
+      </tr>
+  </tbody>
+</table>
+<p>参数曲线在数学上被约束成平滑的,拉到极端也不会出现色带或诡异反转。<strong>这是一个用&quot;减少自由度&quot;换&quot;降低风险&quot;的典型设计。</strong></p>
+<h3 id="那个准星">那个准星</h3>
+<p><strong>取样调整工具</strong>。点开后直接在照片上按住某处上下拖动,LR 会自动找到那个亮度在曲线上的位置帮你调。</p>
+<p>想压暗天空又不知道天空在曲线的哪一段?点它,在天空上往下拖就行。</p>
+<h3 id="三个立刻能用的手法">三个立刻能用的手法</h3>
+<ol>
+<li><strong>加对比</strong> —— 主曲线拉 S 形。记得看一眼颜色是不是艳过头了。</li>
+<li><strong>褪色胶片感</strong> —— 主曲线<strong>左下角的端点往上提</strong>。黑色不再是纯黑,画面像蒙了层灰。</li>
+<li><strong>冷阴影暖高光</strong> —— 蓝通道左抬右压,幅度要小,一两格就够。</li>
+</ol>
+<p>第 2 个特别值得试,因为它用一个动作就说明了曲线的本质:<strong>你不是在&quot;加滤镜&quot;,你是在改写&quot;输入 0 应该输出多少&quot;这条对照表。</strong></p>
+<p>记住这个动作——<strong>下一篇讲胶片时,你会发现胶片天生就是这个形状。</strong></p>
+<hr>
+<h1 id="第五部分--调整颜色管线下游">第五部分 · 调整颜色(管线下游)</h1>
+<p>明暗定完了,现在处理颜色。</p>
+<p>这一部分的面板,解决的是同一类问题的不同切法:<strong>我只想动画面里的一部分颜色,怎么把它们挑出来?</strong></p>
+<p>答案有两种切法——<strong>按色相切</strong>,和<strong>按亮度切</strong>。</p>
+<h2 id="10-color-mixer按色相切">10. Color Mixer:按色相切</h2>
+<div class="gal" style="--gal-cols:4;--gal-gap:10px"><figure><img src="/color_mixer_color.png" alt="" loading="lazy"></figure><figure><img src="/color_mixer_hue.png" alt="" loading="lazy"></figure><figure><img src="/color_mixer_lumi.png" alt="" loading="lazy"></figure><figure><img src="/color_mixer_satura.png" alt="" loading="lazy"></figure></div>
+
+<h3 id="问题-2">问题</h3>
+<p>你想让天空更蓝,但不想让人的皮肤跟着变。全局饱和度做不到。</p>
+<h3 id="设计-2">设计</h3>
+<p>前面的操作都是全图统一。这个面板厉害在<strong>它会先看每个像素是什么颜色,再决定要不要动它</strong>。</p>
+<p>八个色带(红橙黄绿水蓝蓝紫品红),对每一个都能单独调三样东西——正好是万能钥匙的三项:</p>
+<ul>
+<li><strong>Hue</strong> = 改排序 → 把绿色的树叶偏向黄一点</li>
+<li><strong>Saturation</strong> = 改差距 → 只让天空更蓝</li>
+<li><strong>Luminance</strong> = 改高度 → 只把红色压暗</li>
+</ul>
+<p><strong>关键:它看的是色相角,不是&quot;RGB 里有多少红&quot;。</strong></p>
+<p>这两件事完全不同。<code>rgb(128, 0, 255)</code> 这个紫色,R 是 128 占了一半,但拖 Red 滑块它纹丝不动——因为色带划分读的是三个数的<strong>排序和比例</strong>,不是 R 的绝对值。</p>
+<p>最能说明问题的是白色:它的 R 是满值 255,却不属于任何色带。<strong>三个数相等就没有色相。</strong></p>
+<h3 id="为什么八个带的间距不均匀">为什么八个带的间距不均匀</h3>
+<p>红、橙、黄挤在 0°–60° 这一小段就占了三个带,而 60°–240° 那么宽只有绿、水蓝两个。</p>
+<p>这不是数学需要,是<strong>产品决策</strong>:肤色、夕阳、食物、木头全落在暖色那一小段,值得多给几个精细档位。</p>
+<h3 id="怎么判断一个颜色归谁管">怎么判断一个颜色归谁管</h3>
+<p><strong>最快的办法</strong>是用面板右上角那个准星,在照片上按住往上下拖。Lightroom 自己读出色相,自动分配到对应滑块——横跨两个带的话,它会<strong>按权重同时动两根</strong>。</p>
+<p><strong>想心里有数的话</strong>,看 R、G、B 谁最大、谁第二:</p>
+<table>
+  <thead>
+      <tr>
+          <th>排序</th>
+          <th>色相区间</th>
+          <th>落在哪</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>R &gt; G &gt; B,且 G 接近 B</td>
+          <td>0°–20°</td>
+          <td>红</td>
+      </tr>
+      <tr>
+          <td>R &gt; G &gt; B,G 明显高于 B</td>
+          <td>20°–50°</td>
+          <td>橙(<strong>肤色在这</strong>)</td>
+      </tr>
+      <tr>
+          <td>R ≈ G &gt; B</td>
+          <td>50°–70°</td>
+          <td>黄</td>
+      </tr>
+      <tr>
+          <td>G &gt; R &gt; B</td>
+          <td>70°–150°</td>
+          <td>绿</td>
+      </tr>
+      <tr>
+          <td>G ≈ B &gt; R</td>
+          <td>150°–210°</td>
+          <td>水蓝</td>
+      </tr>
+      <tr>
+          <td>B &gt; G &gt; R</td>
+          <td>210°–260°</td>
+          <td>蓝</td>
+      </tr>
+      <tr>
+          <td>B &gt; R &gt; G</td>
+          <td>260°–310°</td>
+          <td>紫</td>
+      </tr>
+      <tr>
+          <td>R ≈ B &gt; G</td>
+          <td>310°–350°</td>
+          <td>品红</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>口诀:最大的那个决定大方向,第二大的决定往哪偏。</strong></p>
+<p>典型的浅肤色 <code>rgb(230, 180, 150)</code>:R 最大 → 红色方向;G(180) 明显高于 B(150) → 往黄偏。落在 20° 左右,<strong>橙带为主,红带为辅</strong>。</p>
+<h3 id="代价卡在两带之间时做不到隔离">代价:卡在两带之间时,做不到隔离</h3>
+<p>色带之间没有硬边界,是重叠的平滑加权。一个 15° 的颜色,红橙各占一半。</p>
+<p>想把它移动 20 个单位,<strong>两根滑块都得给 20</strong>——但这样纯红(0°)和纯橙(30°)也各自被移动了 20。</p>
+<p><strong>Color Mixer 无法只动&quot;中间那段&quot;而不碰两端。</strong> 这是加权机制的固有限制,不是操作技巧问题。</p>
+<p>实用对策:</p>
+<ol>
+<li><strong>按距离比例分配</strong>。肤色主区在 22° 左右,离橙更近,所以 <code>Orange −15, Red −7</code> 这样配,不要两边给一样多。</li>
+<li><strong>拖之前扫一眼画面</strong>,看有没有纯红或纯橙的东西会被误伤。</li>
+<li><strong>该放弃时就放弃</strong>。如果画面里既有人脸又有红衣服,而你只想动脸——用蒙版,别硬试。</li>
+</ol>
+<blockquote>
+<p><strong>判断标准:你要改的是&quot;某种颜色&quot;,还是&quot;某个东西&quot;?</strong>
+前者用 Color Mixer,后者用蒙版。</p></blockquote>
+<p>还有一点:色带按色相分,而<strong>低饱和度像素的色相本来就摇摆不定</strong>(回想 HSL 圆柱的顶和底)。Lightroom 会按饱和度加权,越接近灰的像素响应越弱。所以你没法用 Color Mixer 给一面灰墙上色。</p>
+<h2 id="11-color-grading按亮度切">11. Color Grading:按亮度切</h2>
+<div class="gal" style="--gal-cols:2;--gal-gap:10px"><figure><img src="/color_grading.png" alt="" loading="lazy"></figure></div>
+
+<h3 id="问题-3">问题</h3>
+<p>有些需求跟&quot;是什么颜色&quot;无关,只跟&quot;有多亮&quot;有关:我想让所有阴影偏冷、所有高光偏暖,不管它们本来是什么颜色。</p>
+<h3 id="设计-3">设计</h3>
+<p>三个色轮,分别管暗部、中间调、亮部。</p>
+<p>色轮上<strong>转到哪个方向 = 加什么颜色,离圆心多远 = 加多少</strong>——这正是第 2 节那个 HSL 圆柱横切下来的一片。</p>
+<p>典型用法:暗部加一点蓝,亮部加一点橙。</p>
+<h3 id="balance-和-blending">Balance 和 Blending</h3>
+<p>这两根滑块管的是<strong>三个色轮各自的势力范围</strong>:</p>
+<ul>
+<li><strong>Balance</strong> = 分界线画在哪</li>
+<li><strong>Blending</strong> = 这条线有多模糊</li>
+</ul>
+<div class="gal" style="--gal-cols:1;--gal-gap:10px"><figure><img src="/color_grading_balance.svg" alt="" loading="lazy"></figure></div>
+
+<p><strong>Balance 往右推</strong>,亮部的地盘扩大——更多像素被算作&quot;高光&quot;,暗部被挤小。</p>
+<p><strong>Blending 控制的是重叠宽度,不是距离。</strong> 三个区域始终覆盖整个亮度范围,不会因为 Blending 低就分开、中间留出空隙。变的是交界处<strong>过渡得多突然</strong>:</p>
+<div class="gal" style="--gal-cols:1;--gal-gap:10px"><figure><img src="/blending_low_vs_high_overlap_width.svg" alt="" loading="lazy"></figure></div>
+
+<p>换个比方——想象三盏聚光灯打在墙上:<strong>Balance 是把灯往左右挪,Blending 是调焦</strong>,决定光斑边缘是刀切一样锐利,还是羽化开来。</p>
+<table>
+  <thead>
+      <tr>
+          <th></th>
+          <th>好处</th>
+          <th>代价</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Blending 低</td>
+          <td>暗部的蓝和亮部的橙互不干扰,对比强烈</td>
+          <td>中间调可能出现生硬色带</td>
+      </tr>
+      <tr>
+          <td>Blending 高</td>
+          <td>过渡自然</td>
+          <td>两个颜色互相稀释,效果变弱、容易发浑</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="它是滤镜吗">它是滤镜吗?</h3>
+<p>&ldquo;在亮部和暗部加有色滤镜&quot;这个理解<strong>方向是对的</strong>,但两端的运算其实不一样:</p>
+<table>
+  <thead>
+      <tr>
+          <th></th>
+          <th>更像什么</th>
+          <th>数学上</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>暗部上色</td>
+          <td>打一盏<strong>有色补光灯</strong></td>
+          <td>加法</td>
+      </tr>
+      <tr>
+          <td>亮部上色</td>
+          <td>镜头前<strong>加一片滤镜</strong></td>
+          <td>乘法</td>
+      </tr>
+  </tbody>
+</table>
+<p>这个区别有实际后果:<strong>给暗部上色容易让画面发灰</strong>。因为加法直接抬高了黑位——本来是纯黑的地方被加进了蓝光,就不再是纯黑了。这就是&quot;褪色胶片感&quot;的来源,想要就是优点,不想要就是脏。</p>
+<p>而亮部是乘法,纯白乘任何颜色还是保持明亮,所以给高光上色更&quot;安全&rdquo;。</p>
+<p><strong>真正的物理滤镜只有乘法一种。所以严格说,Color Grading 比滤镜多了一种能力。</strong></p>
+<h3 id="三个面板的分工">三个面板的分工</h3>
+<p>这三个面板经常被搞混,其实它们切分画面的<strong>依据完全不同</strong>:</p>
+<table>
+  <thead>
+      <tr>
+          <th>面板</th>
+          <th>按什么切</th>
+          <th>问的问题</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Color Mixer</td>
+          <td><strong>色相</strong></td>
+          <td>这个像素是什么颜色?</td>
+      </tr>
+      <tr>
+          <td>Color Grading</td>
+          <td><strong>亮度</strong></td>
+          <td>这个像素有多亮?</td>
+      </tr>
+      <tr>
+          <td>Calibration</td>
+          <td>不切</td>
+          <td>(全局改原色定义)</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>打个比方:</strong> Color Grading 是分楼层刷漆(一楼刷蓝、三楼刷橙);Calibration 是换了一批不同色号的油漆桶,所有楼层同时受影响。</p>
+<p>那谁和 Color Grading 重叠?是<strong>曲线的单通道</strong>。两者都按亮度上色,区别是:Color Grading 直观、三个固定区域;单通道曲线精度更高,能做&quot;只给 15%–25% 亮度那一段加青&quot;这种细活。</p>
+<p>先用 Color Grading 定大方向,再用曲线抠细节,是常见组合。</p>
+<h2 id="12-饱和度-vs-自然饱和度">12. 饱和度 vs 自然饱和度</h2>
+<p>两个都是&quot;拉开差距&quot;,区别在聪明程度。</p>
+<ul>
+<li><strong>Saturation</strong> —— 一视同仁,所有像素的差距都拉开同样比例。拉猛了,本来就鲜艳的红花会糊成一片死红。</li>
+<li><strong>Vibrance</strong> —— 会先看这个像素<strong>本来有多艳</strong>:已经很艳的少动,灰扑扑的多动。而且它特意避开肤色范围。</li>
+</ul>
+<p>写成式子,Vibrance 比 Saturation 多了两个权重函数:</p>
+<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>S</mi><mo>=</mo><mi>a</mi><mo>⋅</mo><mi>f</mi><mo stretchy="false">(</mo><mi>S</mi><mo stretchy="false">)</mo><mo>⋅</mo><mi>g</mi><mo stretchy="false">(</mo><mi>H</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">
+\Delta S = a \cdot f(S) \cdot g(H)
+</annotation></semantics></math></span><p>其中 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span> 随饱和度上升而衰减(保护已经很艳的),<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi></mrow><annotation encoding="application/x-tex">g</annotation></semantics></math></span> 在橙色区间凹陷(保护肤色)。</p>
+<p><strong>拍人像用 Vibrance 更安全,就是这个原因。</strong></p>
+<hr>
+<h1 id="第六部分--装饰管线末端">第六部分 · 装饰(管线末端)</h1>
+<div class="gal" style="--gal-cols:2;--gal-gap:10px"><figure><img src="/effects.png" alt="" loading="lazy"></figure></div>
+
+<h2 id="13-局部对比一类完全不同的操作">13. 局部对比:一类完全不同的操作</h2>
+<p>清晰度 / 纹理 / 去朦胧这三个,和前面<strong>所有</strong>模块有个本质区别:</p>
+<blockquote>
+<p><strong>前面的操作只看当前像素自己,这三个要看周围的像素。</strong></p></blockquote>
+<p>这是运算上的分水岭。前面所有东西都可以写成&quot;输入三个数 → 输出三个数&quot;的函数;而这三个必须知道邻居长什么样,计算量高一个量级。</p>
+<p>它们做的都是&quot;局部对比&quot;:如果这个点比周围亮,就让它更亮;比周围暗,就让它更暗。区别只在&quot;周围&quot;的范围有多大:</p>
+<ul>
+<li><strong>Texture(纹理)</strong> —— 看很小的范围,处理细节,但刻意避开更细的噪点</li>
+<li><strong>Clarity(清晰度)</strong> —— 看较大的范围。<strong>推太狠会出现边缘光晕</strong>,那是范围没控制好的标志</li>
+<li><strong>Dehaze(去朦胧)</strong> —— 雾的特点是让所有像素的三个数字都往中间靠拢(差距变小、整体发白),所以去朦胧就是反过来把它们重新推开</li>
+</ul>
+<h2 id="14-晕影与颗粒模拟物理介质">14. 晕影与颗粒:模拟物理介质</h2>
+<p><strong>晕影</strong> = 越靠近画面边缘,三个数字乘的系数越小。用来把视线往中间引。</p>
+<p><strong>颗粒</strong> = 给每个像素的数字加一点随机扰动,模拟胶片。</p>
+<p>这两个必须放最后,理由在第 5 节说过:它们模拟的是<strong>成像时就存在的物理现象</strong>。放中间的话,后面的曲线会把晕影再加深一遍,锐化会把颗粒放大成噪点。</p>
+<blockquote>
+<p>顺带记住&quot;颗粒&quot;这一项。<strong>下一篇会说明,为什么数码加的颗粒和真实胶片颗粒,是完全不同的两种东西。</strong></p></blockquote>
+<hr>
+<p><strong>到这里整条管线走完了。一句话总结:</strong></p>
+<blockquote>
+<p>先搞清楚数字代表什么颜色(白平衡、校准)→ 调整数字的整体高度(明暗)→ 调整数字之间的差距和排序(颜色)→ 最后加一层装饰(效果)。</p></blockquote>
+<p>几十根滑块,四件事。</p>
+<hr>
+<h1 id="第七部分--为什么这样调好看">第七部分 · 为什么这样调好看</h1>
+<p>工具讲完了,现在讲更难的那半:<strong>什么样的调色是好看的?有没有万能公式?</strong></p>
+<h2 id="15-万能预设为什么会失败">15. 万能预设为什么会失败</h2>
+<p>预设是一组<strong>固定的参数偏移</strong>。同一个偏移作用在不同起点上,结果必然不同——一张欠曝的阴天照和一张顺光的正午照,加同样的 <code>+0.3 曝光、−28 对比</code>,一个救活了一个毁了。</p>
+<p><strong>这不是预设做得不够好,是预设这个形式本身的天花板。</strong></p>
+<p>但——如果先把所有照片拉到同一个起点呢?</p>
+<h2 id="16-先归一化再统一">16. 先归一化,再统一</h2>
+<p><strong>这正是电影行业的标准流程</strong>,而且有明确的名字:</p>
+<table>
+  <thead>
+      <tr>
+          <th>步骤</th>
+          <th>行业术语</th>
+          <th>做什么</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>① 归一化</td>
+          <td>Primary / Balance</td>
+          <td>白平衡、曝光拉到统一基准</td>
+      </tr>
+      <tr>
+          <td>② 局部修正</td>
+          <td>Secondary</td>
+          <td>蒙版、特定颜色</td>
+      </tr>
+      <tr>
+          <td>③ 统一风格</td>
+          <td>Look / LUT</td>
+          <td>全片一套,不再逐镜头调</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>第三步之所以能&quot;一套用到底&quot;,完全依赖第一步做得干净。</strong> 归一化没做好,后面的 look 就会在不同镜头上呈现出不同结果——这正是预设在业余流程里失效的原因。</p>
+<p><strong>怎么可靠地归一化?最硬的办法是拍色卡。</strong> 现场用同一光线拍一张 ColorChecker,回来生成自定义相机配置文件,套到同场景所有照片上——此时色彩基准<strong>在数学上真正对齐了</strong>。</p>
+<p>没有色卡的话,退而求其次:</p>
+<ul>
+<li>灰点吸管点画面里本该中性的东西(白墙、灰路面、白衣服的阴影面)</li>
+<li>Lightroom Classic 的 <strong>Match Total Exposures</strong> 能把一组照片的曝光拉齐</li>
+<li>肤色当锚点:让脸的色相落在 20°–28°</li>
+</ul>
+<p><strong>三个锚点的优先级:中灰 &gt; 肤色 &gt; 白点。</strong> 有人的照片以肤色为准,没人的以中灰为准。</p>
+<h2 id="17-人类到底喜欢什么">17. 人类到底喜欢什么</h2>
+<p>有答案,而且不神秘——<strong>大部分&quot;好看&quot;的调色,都是在模仿自然光的物理规律。</strong></p>
+<h3 id="规律一暖高光--冷暗部">规律一:暖高光 + 冷暗部</h3>
+<p>这条最深,而且是<strong>物理事实</strong>,不是审美偏好。</p>
+<p>户外有两个光源:<strong>太阳</strong>是直射光,约 5500K,偏暖;<strong>天空</strong>是蓝色穹顶,给阴影补光,约 10000K,偏冷。</p>
+<p>所以在真实日光下,<strong>亮的地方本来就比暗的地方暖</strong>。这是我们这个物种睁眼看了几十万年的东西。</p>
+<p>顺着它做,画面读起来&quot;自然&quot;;反过来做(暖阴影、冷高光),会产生说不清的不安感——<strong>恐怖片经常故意这么干</strong>。</p>
+<p><strong>Color Grading 面板最经典的用法,不是好莱坞发明的风格,是日光的物理结构。</strong></p>
+<h3 id="规律二远处更淡更冷">规律二:远处更淡、更冷</h3>
+<p>大气透视:空气会散射光线,越远的东西饱和度越低、越偏蓝、对比越弱。人脑把这个当作深度线索。</p>
+<p><strong>所以主体保饱和、背景压饱和加冷调,画面会立刻有空间感</strong>——因为你在给大脑喂它熟悉的信号。</p>
+<h3 id="规律三记忆色不能越界">规律三:记忆色不能越界</h3>
+<p>人对三种颜色有终身校准的内在参照:</p>
+<table>
+  <thead>
+      <tr>
+          <th>记忆色</th>
+          <th>大致色相</th>
+          <th>偏离的后果</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>肤色</td>
+          <td>20°–28°</td>
+          <td>偏绿显病态,偏品红显廉价</td>
+      </tr>
+      <tr>
+          <td>天空</td>
+          <td>210°–230°</td>
+          <td>偏青显假,偏紫显廉价</td>
+      </tr>
+      <tr>
+          <td>植物</td>
+          <td>90°–120°</td>
+          <td>偏黄显枯,偏青显塑料</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>这三个是负向规则</strong>——不是&quot;调到这里就好看&quot;,而是&quot;偏离了一定难看&quot;。这是唯一真正接近硬规则的一条。</p>
+<h3 id="规律四蓝色确实占便宜">规律四:蓝色确实占便宜</h3>
+<p>关于颜色偏好,心理学上有个<strong>生态效价理论</strong>:人对某个颜色的喜好,约等于对&quot;这个颜色的常见事物&quot;的喜好加权平均。</p>
+<ul>
+<li>蓝 → 晴空、清水 → 跨文化最受欢迎</li>
+<li>青绿 → 植被、海 → 也很讨喜</li>
+<li>暗黄绿 / 橄榄 → 腐烂、变质 → 最不受欢迎</li>
+</ul>
+<p>所以&quot;多用绿和蓝&quot;这个直觉是有依据的,但要精确一点:<strong>受欢迎的是蓝和青绿,不是黄绿。</strong> 同样是绿,往蓝偏讨喜,往黄偏就危险。</p>
+<p>这解释了为什么调色时把绿色往青蓝推,画面往往立刻变高级。</p>
+<h3 id="为什么这些规律有效">为什么这些规律有效</h3>
+<p>心理学里有个概念叫<strong>加工流畅性</strong>:大脑处理起来越省力的东西,越容易被判断为&quot;美&quot;。</p>
+<p>符合自然统计规律的图像,视觉系统处理起来最省力——因为它就是为解析这类图像进化出来的。</p>
+<p>还有个漂亮的呼应:<strong>自然场景的颜色分布主要沿蓝-黄方向展开</strong>(因为日光一天里就是在这个方向变化);而人眼的对立通道正好是蓝-黄;而 Lightroom 的 Temp 轴还是蓝-黄。</p>
+<p><strong>光源的变化方向、眼睛的编码方向、软件的控制方向,三者重合。</strong> 这不是巧合,是层层适配的结果。</p>
+<h2 id="18-一个可操作的通用底子">18. 一个可操作的&quot;通用底子&quot;</h2>
+<p>归一化之后,这套起点相对普适:</p>
+<pre tabindex="0"><code>Color Grading
+  Shadows    ← 加一点青蓝，饱和度极低（5–10）
+  Highlights ← 加一点橙黄，饱和度极低（5–10）
+  Blending   50，Balance 0
+
+Color Mixer
+  Green      色相往青偏（+10 左右），饱和度 −10
+  Aqua/Blue  饱和度 +10~15
+  Orange     几乎不动（保肤色）
+
+Curve
+  轻微 S 形，左下端点抬起 2–5（一点点褪色）
+</code></pre><p><strong>每一条都能对应回上面的规律:</strong></p>
+<table>
+  <thead>
+      <tr>
+          <th>操作</th>
+          <th>依据</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>冷暗暖亮</td>
+          <td>规律一(日光的物理结构)</td>
+      </tr>
+      <tr>
+          <td>绿往青偏、降饱和</td>
+          <td>规律四(躲开黄绿)</td>
+      </tr>
+      <tr>
+          <td>蓝青提饱和</td>
+          <td>规律四(往讨喜方向去)</td>
+      </tr>
+      <tr>
+          <td>橙不动</td>
+          <td>规律三(保肤色)</td>
+      </tr>
+      <tr>
+          <td>端点抬起</td>
+          <td>模仿胶片的趾部</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>这套东西不会让照片惊艳,但会让一组照片看起来是一组。</strong> 它的价值在统一,不在出彩。</p>
+<h3 id="顺带一句最强的调色发生在按快门之前">顺带一句:最强的调色发生在按快门之前</h3>
+<p>选择拍什么、穿什么、在哪拍,比后期强大得多。</p>
+<p>一件荧光粉的外套,后期没有任何办法让它和谐;而一开始就让人穿灰蓝色站在砖墙前,你几乎不用调色。</p>
+<p><strong>后期能做的是&quot;强化已有的关系&quot;,做不到&quot;无中生有&quot;。</strong></p>
+<hr>
+<h1 id="尾声--和谐来自约束">尾声 · 和谐来自约束</h1>
+<p>最后回到那个&quot;有没有万能公式&quot;的问题。</p>
+<p>答案是:<strong>有一种东西比公式更有效,但它不是公式,是约束。</strong></p>
+<p>对比一下就清楚了:</p>
+<ul>
+<li><strong>预设失败</strong>,是因为它给的是<strong>参数</strong>——参数遇到不同起点就崩。</li>
+<li><strong>一卷胶片成功</strong>,是因为它给的是<strong>约束</strong>——36 张照片,晴天阴天、室内室外、人像风景,全部被<strong>同一条曲线</strong>碾过一遍。</li>
+</ul>
+<p>结果是天然的统一性。<strong>不是因为那条曲线特别正确,而是因为它对所有照片一视同仁。</strong></p>
+<p>数码给了你无限自由,而<strong>自由不产生统一</strong>。你可以每张照片调得更&quot;对&quot;,但一组照片放在一起就是散的。</p>
+<p>这也解释了为什么职业摄影师往往只用两三种胶片、或者只用自己那一套 LUT。不是因为找到了最优解,<strong>是因为放弃选择本身就是一种风格</strong>。</p>
+<blockquote>
+<p><strong>一句实操建议:</strong> 别找万能公式,给自己定一套约束。选三种色调,一个固定的对比曲线,一个统一的暗部色偏,然后逼自己所有照片都用它。三个月后你会有风格——不是因为那套参数好,而是因为你坚持了。</p></blockquote>
+<hr>
+<h2 id="下一篇那么胶片到底是什么">下一篇:那么,胶片到底是什么?</h2>
+<p>这篇文章从头到尾在讲同一件事:<strong>数字被规则改变</strong>。所有面板都是同一种东西的变奏——输入三个数,输出三个数。</p>
+<p>但胶片不是这样工作的。它没有数字,没有查找表,没有矩阵。它是<strong>光照在化学物质上,引发一连串反应</strong>。</p>
+<p>而奇怪的是,很多人觉得胶片的颜色比任何精心调过的数码照片都好看,甚至说那是&quot;自然的给予&quot;。</p>
+<p><strong>这个说法恰恰是反的。</strong> 胶片色彩是人类历史上最重工程化的色彩系统之一——柯达为了 Portra 的肤色调了几十年配方,Velvia 的高饱和是彻头彻尾的商业决策。它比任何 LUT 都更&quot;人造&quot;。</p>
+<p>但它<strong>感觉</strong>自然。下一篇会拆开这个错觉,具体要回答:</p>
+<ol>
+<li>
+<p><strong>为什么胶片的高光不会&quot;死&quot;?</strong> —— 数码传感器到了满值就削平,再多的光都记录成同一个数;胶片是化学反应,越接近饱和反应越慢,形成一个渐进的<strong>肩部</strong>。而这条肩部曲线,恰好和人眼对亮度的压缩响应很像。</p>
+</li>
+<li>
+<p><strong>为什么胶片的颜色是&quot;活&quot;的?</strong> —— 数码的三条曲线各自为政;胶片的三层药膜在显影时<strong>会互相抑制</strong>。这是一个耦合的非线性系统,不是三条独立的查找表能模拟的。</p>
+</li>
+<li>
+<p><strong>为什么人们爱的,恰恰是工程师当年想消除的?</strong> —— 三层特性曲线做不到完全一致,不同密度下平衡会漂移,这个现象叫<strong>交叉(crossover)</strong>,当年被视为缺陷。而残留的那一点交叉,表现出来正是&quot;暗部偏冷、亮部偏暖&quot;——今天所有人都在追的那个&quot;电影感&quot;。</p>
+</li>
+<li>
+<p><strong>胶片颗粒和数码噪点有什么区别?</strong> —— 一个是随机银盐晶体,尺寸随密度变化,是有结构的;一个是逐像素的随机数。</p>
+</li>
+<li>
+<p><strong>光晕(halation)是怎么来的?</strong> —— 强光穿透药膜,从片基背面反射回来,在高光边缘形成红晕。这是 LUT 完全复制不了的。</p>
+</li>
+<li>
+<p><strong>胶片色彩符合黄金比例吗?</strong> —— 不符合。但为什么总有人这么问,这件事本身值得说。</p>
+</li>
+</ol>
+<p><strong>最核心的一点</strong>:LUT 是一张静态的 RGB→RGB 映射表,它能相当好地复制胶片的<strong>颜色映射</strong>,但复制不了<strong>捕捉过程</strong>。数码高光一旦削平,任何 LUT 都救不回来。</p>
+<blockquote>
+<p><strong>胶片的魔法有一半发生在按快门的那一刻,不在后期。</strong></p></blockquote>
+<p>这就是为什么套了胶片 LUT 的数码照片,常常&quot;像但不是&quot;。像的是映射那一半,缺的是捕捉那一半。</p>
+<p>下一篇,我们从银盐晶体开始讲起。</p>
+
+            </div>
+            <section class="tip-jar" aria-label="Support">
+  <p class="tip-lead">打赏 · 请我喝杯咖啡</p>
+  <p class="tip-sub">你的支持会让我更有动力创造更多内容。<span>Buy me a coffee — your support keeps new posts coming.</span></p>
+  <div class="tip-methods">
+    <figure class="tip-qr"><img src="/support/tip-wechat_hu_42edfc21ef27a667.jpg" alt="WeChat Pay" loading="lazy"><figcaption>微信 WeChat</figcaption></figure>
+    
+    <figure class="tip-qr"><img src="/support/tip-alipay_hu_b741bf0d9bea6612.jpg" alt="Alipay" loading="lazy"><figcaption>支付宝 Alipay</figcaption></figure>
+    </div>
+  <div class="tip-links"><a href="https://paypal.me/HenryHu0425" target="_blank" rel="noopener">PayPal</a><a href="https://ko-fi.com/henryhu0425" target="_blank" rel="noopener">Ko-fi</a><a href="mailto:weiyi.henry.hu@gmail.com">Email</a></div>
+</section>
+        </article></main>
+</div><script src="/js/post-toc.min.28e988a370e9d37fcd12ec24ce09b850691b2f5d25118669c2e60aa10461f790.js" defer></script>
+<footer class="footer">
+    <div class="footer-scheme"><div class="scheme-picker" role="group" aria-label="Colour scheme">
+  <button type="button" class="scheme-swatch sw-entan"         data-scheme="entan"         aria-label="鉛丹 Entan"          title="鉛丹 Entan"></button>
+  <button type="button" class="scheme-swatch sw-mushikuri"     data-scheme="mushikuri"     aria-label="蒸栗 Mushikuri"      title="蒸栗 Mushikuri"></button>
+  <button type="button" class="scheme-swatch sw-baikocha"      data-scheme="baikocha"      aria-label="梅幸茶 Baikocha"     title="梅幸茶 Baikocha"></button>
+  <button type="button" class="scheme-swatch sw-tsuyukusa"     data-scheme="tsuyukusa"     aria-label="露草 Tsuyukusa"      title="露草 Tsuyukusa"></button>
+  <button type="button" class="scheme-swatch sw-noshimehana"   data-scheme="noshimehana"   aria-label="熨斗目花 Noshimehana" title="熨斗目花 Noshimehana"></button>
+  <button type="button" class="scheme-swatch sw-kenpohzome"    data-scheme="kenpohzome"    aria-label="憲法染 Kenpohzome"    title="憲法染 Kenpohzome"></button>
+  <button type="button" class="scheme-swatch sw-kurotsurubami" data-scheme="kurotsurubami" aria-label="黒橡 Kurotsurubami"   title="黒橡 Kurotsurubami"></button>
+  <label class="scheme-swatch scheme-custom" title="任意色 Custom">
+    <input type="color" id="scheme-custom-input" value="#43341b" aria-label="Custom background colour">
+  </label>
+</div>
+</div>
+    <div class="footer_social-icons">
+<a href="https://github.com/Waye" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="https://www.linkedin.com/in/weiyihenryhu/" target="_blank" rel="noopener noreferrer me"
+    title="Linkedin">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+    <rect x="2" y="9" width="4" height="12"></rect>
+    <circle cx="4" cy="4" r="2"></circle>
+</svg>
+</a>
+<a href="https://www.instagram.com/henryry.raf/" target="_blank" rel="noopener noreferrer me"
+    title="Instagram">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"></line>
+</svg>
+</a>
+<a href="/index.xml" target="_blank" rel="noopener noreferrer me"
+    title="Rss">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 11a9 9 0 0 1 9 9" />
+    <path d="M4 4a16 16 0 0 1 16 16" />
+    <circle cx="5" cy="19" r="1" />
+</svg>
+</a>
+<a href="https://www.xiaohongshu.com/user/profile/5f756e4000000000010018a6" target="_blank" rel="noopener noreferrer me"
+    title="Xiaohongshu">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 6.5C10.4 5.1 7.9 4.5 4 4.5v13c3.9 0 6.4.6 8 2 1.6-1.4 4.1-2 8-2v-13c-3.9 0-6.4.6-8 2z"/>
+    <path d="M12 6.5v13"/>
+</svg>
+</a>
+<a href="https://www.youtube.com/@only_oneone1751" target="_blank" rel="noopener noreferrer me"
+    title="Youtube">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z">
+    </path>
+    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+</svg>
+</a>
+<a href="https://space.bilibili.com/8148735" target="_blank" rel="noopener noreferrer me"
+    title="Bilibili">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1.3333" y="6" width="21.333" height="15.333" rx="4" ry="4"/>
+    <path d="m8 12.4v1.2"/>
+    <path d="m16 12.4v1.2"/>
+    <path d="m5.8853 2.6667 2.6667 2.6667"/>
+    <path d="m18.115 2.6667-2.6667 2.6667"/>
+</svg>
+</a>
+<a href="https://x.com/weiyi_hoo" target="_blank" rel="noopener noreferrer me"
+    title="X">
+    <svg viewBox="0 0 1200 1227" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path
+        d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z"/>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2026 Weiyi(Henry)Hu
+    </small>
+</footer><a href="#" title="Go to top" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a></div>
+        </div>
+
+
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script async src="http://localhost:1313/js/main.js" ></script>
+
+    
+
+</body>
+</html>

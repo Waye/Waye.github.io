@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 310" role="img" aria-labelledby="t d">
+<title id="t">胶片的肩部与数码的硬切</title>
+<desc id="d">两条响应曲线随进光量增加而变化。数码曲线线性上升后在上限处骤然截平，此后更亮的光都记录为同一个数值。胶片曲线底部有平缓的趾部、顶部有渐进的肩部，高光被柔和压缩且永远不会触及上限。</desc>
+<style>
+  .lbl { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; font-size: 12px; }
+  .hd  { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; font-size: 14px; font-weight: 600; }
+  .ax  { stroke: #b4b0a8; }
+  .tx  { fill: #57534c; }
+  @media (prefers-color-scheme: dark) {
+    .ax { stroke: #55514a; }
+    .tx { fill: #a9a49b; }
+  }
+</style>
+
+<line class="ax" x1="80" y1="248" x2="640" y2="248" stroke-width="1"/>
+<line class="ax" x1="80" y1="248" x2="80"  y2="52"  stroke-width="1"/>
+<line class="ax" x1="80" y1="64"  x2="640" y2="64"  stroke-width=".7" stroke-dasharray="4 4"/>
+<text class="lbl tx" x="86" y="56">记录上限</text>
+
+<path d="M80 248 L 420 64 L 640 64" fill="none" stroke="#C7452F" stroke-width="2.2"/>
+<circle cx="420" cy="64" r="4.5" fill="#C7452F"/>
+
+<path d="M80 245 C 150 241, 190 208, 255 158 C 330 103, 430 80, 640 72"
+      fill="none" stroke="#3B6FD4" stroke-width="2.2"/>
+
+<text class="hd" x="516" y="52" text-anchor="middle" fill="#C7452F">数码</text>
+<text class="lbl tx" x="516" y="100" text-anchor="middle">到顶就削平</text>
+<text class="lbl tx" x="516" y="120" text-anchor="middle">此后全是同一个数，细节消失</text>
+
+<text class="hd" x="248" y="130" text-anchor="middle" fill="#3B6FD4">胶片</text>
+<text class="lbl tx" x="248" y="208" text-anchor="middle">渐进压缩（肩部）</text>
+<text class="lbl tx" x="248" y="228" text-anchor="middle">永远不到顶，高光始终有层次</text>
+
+<text class="lbl tx" x="360" y="282" text-anchor="middle">横轴：进光量　　纵轴：记录到的值</text>
+<text class="lbl tx" x="360" y="302" text-anchor="middle">这条肩部曲线，恰好和人眼对亮度的压缩响应很像</text>
+</svg>

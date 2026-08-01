@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 360" role="img" aria-labelledby="t d">
+<title id="t">为什么 Temp 与 Tint 是这两个轴</title>
+<desc id="d">横轴为蓝到黄的色温轴，几乎所有自然光源与白炽光源都落在这条线上；纵轴为绿到品红的色调轴，只有荧光灯等偏离色温轴的光源才需要用到它。</desc>
+<style>
+  .lbl { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; font-size: 12px; }
+  .hd  { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; font-size: 14px; font-weight: 600; }
+  .ax  { stroke: #b4b0a8; stroke-width: 1; }
+  .tx  { fill: #57534c; }
+  .dot { stroke: #57534c; stroke-width: .6; }
+  @media (prefers-color-scheme: dark) {
+    .ax  { stroke: #55514a; }
+    .tx  { fill: #a9a49b; }
+    .dot { stroke: #a9a49b; }
+  }
+</style>
+
+<line class="ax" x1="110" y1="180" x2="588" y2="180"/>
+<line class="ax" x1="345" y1="52"  x2="345" y2="308"/>
+
+<text class="hd" x="98"  y="185" text-anchor="end"   fill="#3566c4">蓝</text>
+<text class="hd" x="600" y="185" text-anchor="start" fill="#b8901a">黄</text>
+<text class="hd" x="345" y="42"  text-anchor="middle" fill="#3d9b46">绿</text>
+<text class="hd" x="345" y="328" text-anchor="middle" fill="#b03a8f">品红</text>
+
+<line x1="420" y1="126" x2="420" y2="174" stroke="#3d9b46" stroke-width="1" stroke-dasharray="4 3"/>
+
+<circle class="dot" cx="200" cy="180" r="6.5" fill="#8fb4e0"/>
+<circle class="dot" cx="345" cy="180" r="6.5" fill="#f2f0e8"/>
+<circle class="dot" cx="480" cy="180" r="6.5" fill="#e8b45a"/>
+<circle class="dot" cx="420" cy="120" r="6.5" fill="#a8c88a"/>
+
+<text class="lbl tx" x="200" y="206" text-anchor="middle">蓝天 10000K</text>
+<text class="lbl tx" x="358" y="170" text-anchor="start">日光 5500K</text>
+<text class="lbl tx" x="480" y="206" text-anchor="middle">白炽灯 2700K</text>
+<text class="lbl tx" x="436" y="116" text-anchor="start">荧光灯（偏绿）</text>
+
+<text class="lbl tx" x="556" y="240" text-anchor="middle">Temp 色温轴</text>
+<text class="lbl tx" x="392" y="76"  text-anchor="start">Tint 色调轴</text>
+
+<text class="lbl tx" x="340" y="352" text-anchor="middle">烧热发光的光源全落在横轴上；纵轴是留给不守规矩的光源的</text>
+</svg>

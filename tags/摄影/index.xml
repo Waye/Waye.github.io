@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>摄影 on Weiyi(Henry)Hu</title><link>https://weiyi-hu.com/tags/%E6%91%84%E5%BD%B1/</link><description>Recent content in 摄影 on Weiyi(Henry)Hu</description><generator>Hugo -- gohugo.io</generator><language>en-gb</language><lastBuildDate>Wed, 22 Jul 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://weiyi-hu.com/tags/%E6%91%84%E5%BD%B1/index.xml" rel="self" type="application/rss+xml"/><item><title>光与硅 —— 数字成色原理与 Lightroom 调色</title><link>https://weiyi-hu.com/posts/cmy-rgb-lr-research/</link><pubDate>Wed, 22 Jul 2026 00:00:00 +0000</pubDate><guid>https://weiyi-hu.com/posts/cmy-rgb-lr-research/</guid><description>&lt;blockquote>
+&lt;p>想在具体进入lumen-nuro 项目之前先介绍下基本的成色原理, 以及通过lightroom来介绍调色的逻辑
+这篇文章不会牵扯过多的胶片的内容, 但会在之后的文章里解说
+作者:Weiyi | 项目仓库:&lt;code>github.com/Waye/Lumen-Neuro&lt;/code> | 状态:M2 完成(2026-06-02, commit dd3cba1),arXiv 预印包就绪&lt;/p>&lt;/blockquote>
+&lt;h2 id="序先问一个奇怪的问题">序:先问一个奇怪的问题&lt;/h2>
+&lt;p>打开 Lightroom,你会看到几十根滑块。大部分教程会告诉你&amp;quot;这根往右拉画面变亮&amp;quot;,然后你照做,画面确实变亮了。&lt;/p>
+&lt;p>但很少有人问:&lt;strong>为什么是这几根滑块?&lt;/strong>&lt;/p>
+&lt;p>为什么白平衡只有两根而不是三根?为什么曲线面板底下要专门放一根叫&amp;quot;精修饱和度&amp;quot;的东西?为什么相机校准里会突然冒出一个只管暗部的滑块?为什么所有教程都说&amp;quot;先调曝光再调色&amp;quot;——这是习惯,还是有别的原因?&lt;/p>
+&lt;p>这篇文章想说明的是:&lt;strong>每一根滑块都不是设计师随手放的,它们各自在解决一个具体的问题。&lt;/strong> 而这些问题往上追,最后会追到同一个地方——人的眼睛。&lt;/p>
+&lt;p>看懂了这条链路,你不需要背任何参数。&lt;/p>
+&lt;hr>
+&lt;h1 id="第一部分--颜色是什么">第一部分 · 颜色是什么&lt;/h1>
+&lt;h2 id="1-三是眼睛的数字不是光的数字">1. 「三」是眼睛的数字,不是光的数字&lt;/h2>
+&lt;p>先破除一个最常见的误解。&lt;/p>
+&lt;p>太阳光里有无穷多种波长,光谱是&lt;strong>连续&lt;/strong>的,红到紫之间没有任何断点。所以&amp;quot;世界上有三种基本的颜色&amp;quot;这句话,在物理上是&lt;strong>错的&lt;/strong>。&lt;/p>
+&lt;p>那三从哪来?&lt;/p>
+&lt;p>从眼睛来。人的视网膜上只有&lt;strong>三种视锥细胞&lt;/strong>,分别对短、中、长波长敏感。任何射进眼睛的光,不管成分多复杂,最后都被压缩成这三个细胞的三个信号值。&lt;/p>
+&lt;p>这个压缩是不可逆的。两束成分完全不同的光,只要三个信号值相同,你就看成同一个颜色——这叫&lt;strong>同色异谱&lt;/strong>,也是所有显示技术能成立的根本原因。&lt;/p>
+&lt;p>&lt;strong>屏幕只用三种灯就能骗过你,是因为它只需要凑对三个数。&lt;/strong>&lt;/p>
+&lt;div class="gal" style="--gal-cols:1;--gal-gap:10px">&lt;figure>&lt;img src="https://weiyi-hu.com/posts/cmy-rgb-lr-research/cone_sensitivity.svg" alt="" loading="lazy">&lt;/figure>&lt;/div>
+&lt;p>这张图里有两件反常识的事。第一,所谓的&amp;quot;红&amp;quot;锥细胞(L)峰值在 564nm,&lt;strong>那其实是黄绿色&lt;/strong>,根本不在红色区。第二,M 和 L 两条曲线重叠得极其厉害——&lt;strong>人对红绿的分辨,靠的是这两条曲线之间的差值&lt;/strong>,而不是各自独立的响应。&lt;/p>
+&lt;p>换句话说,&amp;ldquo;红绿蓝&amp;quot;这三个名字本身就是后人贴上去的近似标签。&lt;/p>
+&lt;h3 id="光做加法">光做加法&lt;/h3>
+&lt;p>屏幕上每个像素是三颗自己发光的灯。舞台底色是黑的,因为黑就是&amp;quot;没有光&amp;rdquo;。每往上推一格,就是往画面里注入一份光。&lt;/p>
+&lt;div class="demo">
+&lt;div data-demo="color-add">&lt;/div>&lt;p class="demo-cap">加法滑块 = 光的强度&lt;/p>
+&lt;/div>
+&lt;script src="https://weiyi-hu.com/js/demo-color-add.75698abda55e7635304a25a33a52ab226771b8d7b880be9682b01c07ab4da30a.js" integrity="sha256-dWmKvaVedjUwSiWjOlKrImdxuNe4gL6WgrAcB6tNowo=" defer>&lt;/script>
+&lt;p>三盏全开,所有波长齐了,就是白光。&lt;/p>
+&lt;h3 id="颜料做减法">颜料做减法&lt;/h3>
+&lt;p>颜料反过来。白纸把所有波长都反射回来,所以底色是白的。每加一层颜料,就从这束白光里&lt;strong>吃掉&lt;/strong>一段波长:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>颜料&lt;/th>
+&lt;th>吸收什么&lt;/th>
+&lt;th>也就是关掉哪个通道&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>青 C&lt;/td>
+&lt;td>红光&lt;/td>
+&lt;td>R&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>品红 M&lt;/td>
+&lt;td>绿光&lt;/td>
+&lt;td>G&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>黄 Y&lt;/td>
+&lt;td>蓝光&lt;/td>
+&lt;td>B&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;div class="demo">
+&lt;div data-demo="color-sub">&lt;/div>&lt;p class="demo-cap">减法滑块 = 颜料的浓度&lt;/p>
+&lt;/div>
+&lt;script src="https://weiyi-hu.com/js/demo-color-sub.1992980913dd045019505ba84fb1c13df581bc698594b5f5766391cb8514eced.js" integrity="sha256-GZKYCRPdBFAZUFuoT7HBPfWBvGmFlLX1dmORy4UU7O0=" defer>&lt;/script>
+&lt;p>三色叠满,三段波长全被吸收,接近黑。&lt;/p>
+&lt;p>说&amp;quot;接近&amp;quot;是因为真实油墨做不到完美吸收,CMY 叠满出来是浑浊的深褐色——所以印刷才要额外加一版黑墨,凑成 CMYK 的 K。&lt;/p></description></item></channel></rss>

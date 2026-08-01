@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en-gb"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="content-type" content="text/html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title itemprop="name">Lumen-Neuro:把四种柯达电影胶片装进一个 137,539 参数的可微物理引擎 | Weiyi(Henry)Hu</title>
+<meta property="og:title" content="Lumen-Neuro:把四种柯达电影胶片装进一个 137,539 参数的可微物理引擎 | Weiyi(Henry)Hu" />
+<meta name="twitter:title" content="Lumen-Neuro:把四种柯达电影胶片装进一个 137,539 参数的可微物理引擎 | Weiyi(Henry)Hu" />
+<meta itemprop="name" content="Lumen-Neuro:把四种柯达电影胶片装进一个 137,539 参数的可微物理引擎 | Weiyi(Henry)Hu" />
+<meta name="application-name" content="Lumen-Neuro:把四种柯达电影胶片装进一个 137,539 参数的可微物理引擎 | Weiyi(Henry)Hu" />
+<meta property="og:site_name" content="Awesome hugo blog" />
+
+<meta name="description" content="Minimal Hugo blog theme with light and dark mode support">
+<meta itemprop="description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta property="og:description" content="Minimal Hugo blog theme with light and dark mode support" />
+<meta name="twitter:description" content="Minimal Hugo blog theme with light and dark mode support" />
+
+<meta property="og:locale" content="en-gb" />
+<meta name="language" content="en-gb" />
+
+  <link rel="alternate" hreflang="en-gb" href="http://localhost:1313/posts/lumen-neuro--preprint/index1/" title="English" />
+
+
+
+
+
+    
+    
+    
+
+    <meta property="og:type" content="article" />
+    <meta property="og:article:published_time" content=2026-07-21T00:00:00Z />
+    <meta property="article:published_time" content=2026-07-21T00:00:00Z />
+    <meta property="og:url" content="http://localhost:1313/posts/lumen-neuro--preprint/index1/" />
+
+    
+    <meta property="og:article:author" content="Weiyi(Henry)Hu" />
+    <meta property="article:author" content="Weiyi(Henry)Hu" />
+    <meta name="author" content="Weiyi(Henry)Hu" />
+    
+    
+
+    
+
+    <script defer type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Article",
+        "headline": "Lumen-Neuro:把四种柯达电影胶片装进一个 137,539 参数的可微物理引擎",
+        "author": {
+        "@type": "Person",
+        "name": ""
+        },
+        "datePublished": "2026-07-21",
+        "description": "",
+        "wordCount":  2435 ,
+        "mainEntityOfPage": "True",
+        "dateModified": "2026-07-21",
+        "image": {
+        "@type": "imageObject",
+        "url": ""
+        },
+        "publisher": {
+        "@type": "Organization",
+        "name": "Weiyi(Henry)Hu"
+        }
+    }
+    </script>
+
+
+<meta name="generator" content="Hugo 0.148.2">
+
+    
+    <meta property="og:url" content="http://localhost:1313/posts/lumen-neuro--preprint/index1/">
+  <meta property="og:site_name" content="Weiyi(Henry)Hu">
+  <meta property="og:title" content="Lumen-Neuro:把四种柯达电影胶片装进一个 137,539 参数的可微物理引擎">
+  <meta property="og:description" content="一篇写给大学生(和好奇的高中生)的完整技术复盘 —— 从第一行 datasheet 校验代码,到 arXiv 预印本里的最后一个数字。这篇文章为 Lumen-Neuro 的第一篇论文(claim A / M2 里程碑)画上句号:读完它,你不需要翻仓库、不需要翻 WORKLOG,就能理解整个项目的思路、代码、实验、弯路和边界。
+作者:Weiyi | 项目仓库:github.com/Waye/Lumen-Neuro | 状态:M2 完成(2026-06-02, commit dd3cba1),arXiv 预印包就绪
+0. 这篇文章怎么读 30 秒版:胶片模拟领域有三条路——查找表(LUT)、图像到图像的神经网络、前向物理模拟器——但没有一条同时做到&#34;物理可微 &#43; 跨胶片 &#43; 只用公开数据&#34;。Lumen-Neuro 用物理方程当网络层、一个小神经网络补物理写不出的部分,只靠柯达公开的技术数据表(datasheet),训出一个能同时表达 4 种 Vision3 电影胶片、且能在胶片之间&#34;插值出中间胶片&#34;的可微引擎。全模型 137,539 个参数,在一台 MacBook 上分钟级训完,H&amp;D 曲线复现误差 &lt; 0.007。
+5 分钟版:读 §1(问题)、§4(核心创新 FilmINR)、§7(实验数字)、§10(边界与 TODO)。
+全文:按顺序读。§5–§6 是代码层,§8–§9 是&#34;这个项目实际是怎么被做出来的&#34;——如果你想知道一个 solo 研究项目如何不失控,那两节是全文最值钱的部分。
+文中所有数字都对回项目的 ground truth(WORKLOG.md 验收条目),所有引用在文末标注核实状态——本项目执行零编造引用纪律,查不到原始出处的文献一律标 [TODO] 或直接击杀(§8 有两个真实案例)。
+1. 问题:胶片是什么,为什么模拟它这么难 1.1 两分钟胶片物理课 一卷彩色负片不是&#34;一层感光材料&#34;,而是三层叠在一起的乳剂:分别对红、绿、蓝敏感。光子打进来,卤化银晶体记录潜影;显影液(比如电影胶片用的 ECN-2 工艺)把潜影放大成染料云;最终每一层的&#34;黑度&#34;(密度 D)取决于当初进了多少光(曝光量 E)。">
+  <meta property="og:locale" content="en_gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-07-21T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-07-21T00:00:00+00:00">
+    <meta property="article:tag" content="摄影">
+    <meta property="article:tag" content="英语">
+    <meta property="article:tag" content="中文">
+    <meta property="article:tag" content="计算机">
+
+
+    
+    
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Lumen-Neuro:把四种柯达电影胶片装进一个 137,539 参数的可微物理引擎">
+  <meta name="twitter:description" content="一篇写给大学生(和好奇的高中生)的完整技术复盘 —— 从第一行 datasheet 校验代码,到 arXiv 预印本里的最后一个数字。这篇文章为 Lumen-Neuro 的第一篇论文(claim A / M2 里程碑)画上句号:读完它,你不需要翻仓库、不需要翻 WORKLOG,就能理解整个项目的思路、代码、实验、弯路和边界。
+作者:Weiyi | 项目仓库:github.com/Waye/Lumen-Neuro | 状态:M2 完成(2026-06-02, commit dd3cba1),arXiv 预印包就绪
+0. 这篇文章怎么读 30 秒版:胶片模拟领域有三条路——查找表(LUT)、图像到图像的神经网络、前向物理模拟器——但没有一条同时做到&#34;物理可微 &#43; 跨胶片 &#43; 只用公开数据&#34;。Lumen-Neuro 用物理方程当网络层、一个小神经网络补物理写不出的部分,只靠柯达公开的技术数据表(datasheet),训出一个能同时表达 4 种 Vision3 电影胶片、且能在胶片之间&#34;插值出中间胶片&#34;的可微引擎。全模型 137,539 个参数,在一台 MacBook 上分钟级训完,H&amp;D 曲线复现误差 &lt; 0.007。
+5 分钟版:读 §1(问题)、§4(核心创新 FilmINR)、§7(实验数字)、§10(边界与 TODO)。
+全文:按顺序读。§5–§6 是代码层,§8–§9 是&#34;这个项目实际是怎么被做出来的&#34;——如果你想知道一个 solo 研究项目如何不失控,那两节是全文最值钱的部分。
+文中所有数字都对回项目的 ground truth(WORKLOG.md 验收条目),所有引用在文末标注核实状态——本项目执行零编造引用纪律,查不到原始出处的文献一律标 [TODO] 或直接击杀(§8 有两个真实案例)。
+1. 问题:胶片是什么,为什么模拟它这么难 1.1 两分钟胶片物理课 一卷彩色负片不是&#34;一层感光材料&#34;,而是三层叠在一起的乳剂:分别对红、绿、蓝敏感。光子打进来,卤化银晶体记录潜影;显影液(比如电影胶片用的 ECN-2 工艺)把潜影放大成染料云;最终每一层的&#34;黑度&#34;(密度 D)取决于当初进了多少光(曝光量 E)。">
+
+
+    
+
+    <link rel="canonical" href="http://localhost:1313/posts/lumen-neuro--preprint/index1/"><script>
+    (function(){try{
+      var c=sessionStorage.getItem("waveReveal");
+      if(!c)return;
+      if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){sessionStorage.removeItem("waveReveal");return;}
+      var d=document.documentElement;d.style.setProperty("--wave-color",c);d.classList.add("wave-incoming");
+    }catch(e){}})();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,400;1,500;1,600&family=Noto+Serif:ital,wght@0,400;0,600;1,400&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="/style.min.bf51c2957dffe7f025bb13dd2617c3568a4837ae36d072eba2dbb17330b37d5f.css" rel="stylesheet">
+    <link href="/code-highlight.min.706d31975fec544a864cb7f0d847a73ea55ca1df91bf495fd12a177138d807cf.css" rel="stylesheet">
+
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+
+<link rel="manifest" href="http://localhost:1313/site.webmanifest">
+
+<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#434648">
+
+    
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+
+    
+    
+<style>
+ 
+.wrapper {
+  max-width: 1140px;
+}
+
+@media (max-width: 1200px) {
+  .wrapper {
+    max-width: 100%;
+  }
+}
+
+ 
+.wrapper table {
+  width: 100%;
+}
+
+ 
+.wrapper .gal img,
+.wrapper p > img,
+.wrapper svg {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+  height: auto;
+}
+</style>
+
+</head>
+<body data-theme="auto" class="notransition">
+
+<script src="/js/scheme.js"></script>
+
+<div class="page-shell">
+            <aside class="home-rail page-rail">
+                <div class="rail-top">
+  <a href="http://localhost:1313/" class="rail-logo" aria-label="Home">
+    <span class="rail-dot" aria-hidden="true"></span>
+    <span class="rail-brand">weiyi Hu</span>
+  </a>
+  <div class="rail-colorname" id="rail-colorname" aria-hidden="true">
+    <span class="cn-kanji">蒸栗</span>
+    <span class="cn-romaji">MUSHIKURI</span>
+  </div>
+</div>
+<div class="rail-nav">
+  <nav class="cat-blocks" aria-label="Sections"><a class="cat-block cat-bengara" href="/">
+    <span class="cat-name">Home</span></a><a class="cat-block cat-ai" href="/posts/">
+    <span class="cat-name">Posts</span></a><a class="cat-block cat-koke" href="/map/">
+    <span class="cat-name">Travel</span></a><a class="cat-block cat-kincha" href="/gallery/">
+    <span class="cat-name">Gallery</span></a><a class="cat-block cat-bengara" href="/pages/about/">
+    <span class="cat-name">About</span></a></nav>
+</div>
+
+            </aside>
+            <div class="page-body">
+<div class="wrapper post">
+    <main class="page-content" aria-label="Content">
+        <article>
+            <header class="header">
+                <h1 class="header-title">Lumen-Neuro:把四种柯达电影胶片装进一个 137,539 参数的可微物理引擎</h1>
+                
+                
+                
+                <div class="post-meta">
+                    <time datetime="2026-07-21T00:00:00&#43;00:00" itemprop="datePublished"> 21 Jul 2026 </time>
+                </div>
+                
+            </header>
+            
+            
+    
+    <details class="toc" ZgotmplZ>
+        <summary><b>Table of Contents</b></summary>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0-这篇文章怎么读">0. 这篇文章怎么读</a></li>
+    <li><a href="#1-问题胶片是什么为什么模拟它这么难">1. 问题:胶片是什么,为什么模拟它这么难</a>
+      <ul>
+        <li><a href="#11-两分钟胶片物理课">1.1 两分钟胶片物理课</a></li>
+        <li><a href="#12-三条已有路线各缺一角">1.2 三条已有路线,各缺一角</a></li>
+        <li><a href="#13-空着的第四个位置">1.3 空着的第四个位置</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-核心思想pidr--物理方程当网络层">2. 核心思想:PIDR —— 物理方程当网络层</a>
+      <ul>
+        <li><a href="#21-一句话版本">2.1 一句话版本</a></li>
+        <li><a href="#22-为什么这条路值得走三点-justification出自项目设计文档">2.2 为什么这条路值得走(三点 justification,出自项目设计文档)</a></li>
+        <li><a href="#23-一个命名的故事为什么不叫-neuro-symbolic">2.3 一个命名的故事:为什么不叫 Neuro-Symbolic</a></li>
+        <li><a href="#24-95-结构预焙论点">2.4 &ldquo;95% 结构预焙&quot;论点</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-数据哲学零实拍datasheet-即真值">3. 数据哲学:零实拍,datasheet 即真值</a>
+      <ul>
+        <li><a href="#31-两个被否掉的显然做法定位决策原文">3.1 两个被否掉的&quot;显然做法&quot;(定位决策原文)</a></li>
+        <li><a href="#32-数据是怎么来的从-pdf-到-csv-到张量">3.2 数据是怎么来的:从 PDF 到 CSV 到张量</a></li>
+        <li><a href="#33-claim-a--claim-b一条不许跨的边界">3.3 claim A / claim B:一条不许跨的边界</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-中心创新filminr-与中间胶片">4. 中心创新:FilmINR 与&quot;中间胶片&quot;</a>
+      <ul>
+        <li><a href="#41-把胶片身份变成一个-16-维向量">4.1 把&quot;胶片身份&quot;变成一个 16 维向量</a></li>
+        <li><a href="#42-真实代码lumen_neuroemulsioninrpy">4.2 真实代码:<code>lumen_neuro/emulsion/inr.py</code></a></li>
+        <li><a href="#43-一次漂亮的参数算术交叉验证">4.3 一次漂亮的参数算术交叉验证</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-代码库解剖一条计算图上的十四个模块">5. 代码库解剖:一条计算图上的十四个模块</a>
+      <ul>
+        <li><a href="#51-目录地图">5.1 目录地图</a></li>
+        <li><a href="#52-_backendpy三台机器一套代码">5.2 <code>_backend.py</code>:三台机器,一套代码</a></li>
+        <li><a href="#53-数据契约层datasheet-loader-的防御性设计">5.3 数据契约层:datasheet loader 的防御性设计</a></li>
+        <li><a href="#54-pipelinepylumenneurofilm-的前向链">5.4 <code>pipeline.py</code>:LumenNeuroFilm 的前向链</a></li>
+        <li><a href="#55-代码如何与文档互相咬合">5.5 代码如何与文档互相咬合</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-训练只训一个组件以及为什么这很难得">6. 训练:只训一个组件,以及为什么这很难得</a>
+      <ul>
+        <li><a href="#61-损失函数四项每项有名有姓">6.1 损失函数:四项,每项有名有姓</a></li>
+        <li><a href="#62-只训-inr是结构性的不是口头的">6.2 &ldquo;只训 INR&quot;是结构性的,不是口头的</a></li>
+        <li><a href="#63-训练本身一台-macbook几分钟">6.3 训练本身:一台 MacBook,几分钟</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-实验结果所有数字一处集齐">7. 实验结果:所有数字,一处集齐</a>
+      <ul>
+        <li><a href="#71-主表一个模型四款胶片">7.1 主表:一个模型,四款胶片</a></li>
+        <li><a href="#72-核心证据插值单调性中间胶片是真的吗">7.2 核心证据:插值单调性——&ldquo;中间胶片&quot;是真的吗</a></li>
+        <li><a href="#73-可复现性跨后端-parity">7.3 可复现性:跨后端 parity</a></li>
+        <li><a href="#74-集成闸门g1g5">7.4 集成闸门:G1–G5</a></li>
+      </ul>
+    </li>
+    <li><a href="#8-弯路博物馆brainstorm失败与改向">8. 弯路博物馆:brainstorm、失败与改向</a>
+      <ul>
+        <li><a href="#81-从-30-项愿望清单到一个可发表单元">8.1 从 30 项愿望清单到一个可发表单元</a></li>
+        <li><a href="#82-最大的一次收窄混工艺方案被否窄-claim-a-修正">8.2 最大的一次收窄:混工艺方案被否(窄 claim A 修正)</a></li>
+        <li><a href="#83-一个-1e-13-的幽灵clamp_min0-的故事d50">8.3 一个 1e-13 的幽灵:clamp_min(0) 的故事(D50)</a></li>
+        <li><a href="#84-两次幽灵引用击杀零编造纪律实战">8.4 两次&quot;幽灵引用&quot;击杀:零编造纪律实战</a></li>
+        <li><a href="#85-长会话失察三连文档纪律为什么存在">8.5 长会话失察三连:文档纪律为什么存在</a></li>
+        <li><a href="#86-一次反向纠错500t-的测密口径">8.6 一次反向纠错:500T 的测密口径</a></li>
+        <li><a href="#87-其他入馆藏品一句话版">8.7 其他入馆藏品(一句话版)</a></li>
+      </ul>
+    </li>
+    <li><a href="#9-工程纪律作为方法论">9. 工程纪律作为方法论</a></li>
+    <li><a href="#10-边界与-todo句号之前的诚实清单">10. 边界与 TODO:句号之前的诚实清单</a>
+      <ul>
+        <li><a href="#101-本文不主张的claim-边界">10.1 本文不主张的(claim 边界)</a></li>
+        <li><a href="#102-论文侧遗留-todoarxiv-push-前必修">10.2 论文侧遗留 TODO(arXiv push 前必修)</a></li>
+        <li><a href="#103-m3-路线图下一篇论文">10.3 M3 路线图(下一篇论文)</a></li>
+        <li><a href="#104-文档侧遗留m3-docs-batch">10.4 文档侧遗留(M3 docs batch)</a></li>
+      </ul>
+    </li>
+    <li><a href="#11-结语论文一号的句号">11. 结语:论文一号的句号</a></li>
+    <li><a href="#参考文献标注核实状态">参考文献(标注核实状态)</a></li>
+    <li><a href="#附录-a数字速查卡全部对回-worklog-ground-truth">附录 A:数字速查卡(全部对回 WORKLOG ground truth)</a></li>
+    <li><a href="#附录-b五分钟术语表">附录 B:五分钟术语表</a></li>
+  </ul>
+</nav>
+    </details>
+            <div class="page-content">
+                <blockquote>
+<p><strong>一篇写给大学生(和好奇的高中生)的完整技术复盘</strong> —— 从第一行 datasheet 校验代码,到 arXiv 预印本里的最后一个数字。这篇文章为 Lumen-Neuro 的第一篇论文(claim A / M2 里程碑)画上句号:读完它,你不需要翻仓库、不需要翻 WORKLOG,就能理解整个项目的思路、代码、实验、弯路和边界。</p>
+<p>作者:Weiyi | 项目仓库:<code>github.com/Waye/Lumen-Neuro</code> | 状态:M2 完成(2026-06-02, commit dd3cba1),arXiv 预印包就绪</p></blockquote>
+<hr>
+<h2 id="0-这篇文章怎么读">0. 这篇文章怎么读</h2>
+<p><strong>30 秒版</strong>:胶片模拟领域有三条路——查找表(LUT)、图像到图像的神经网络、前向物理模拟器——但没有一条同时做到&quot;物理可微 + 跨胶片 + 只用公开数据&quot;。Lumen-Neuro 用<strong>物理方程当网络层、一个小神经网络补物理写不出的部分</strong>,只靠柯达公开的技术数据表(datasheet),训出一个能同时表达 4 种 Vision3 电影胶片、且能在胶片之间&quot;插值出中间胶片&quot;的可微引擎。全模型 137,539 个参数,在一台 MacBook 上分钟级训完,H&amp;D 曲线复现误差 &lt; 0.007。</p>
+<p><strong>5 分钟版</strong>:读 §1(问题)、§4(核心创新 FilmINR)、§7(实验数字)、§10(边界与 TODO)。</p>
+<p><strong>全文</strong>:按顺序读。§5–§6 是代码层,§8–§9 是&quot;这个项目实际是怎么被做出来的&quot;——如果你想知道一个 solo 研究项目如何不失控,那两节是全文最值钱的部分。</p>
+<p>文中所有数字都对回项目的 ground truth(<code>WORKLOG.md</code> 验收条目),所有引用在文末标注核实状态——本项目执行<strong>零编造引用</strong>纪律,查不到原始出处的文献一律标 <code>[TODO]</code> 或直接击杀(§8 有两个真实案例)。</p>
+<hr>
+<h2 id="1-问题胶片是什么为什么模拟它这么难">1. 问题:胶片是什么,为什么模拟它这么难</h2>
+<h3 id="11-两分钟胶片物理课">1.1 两分钟胶片物理课</h3>
+<p>一卷彩色负片不是&quot;一层感光材料&quot;,而是<strong>三层叠在一起的乳剂</strong>:分别对红、绿、蓝敏感。光子打进来,卤化银晶体记录潜影;显影液(比如电影胶片用的 ECN-2 工艺)把潜影放大成染料云;最终每一层的&quot;黑度&quot;(密度 D)取决于当初进了多少光(曝光量 E)。</p>
+<p>把&quot;给多少光&quot;和&quot;冲出来多黑&quot;画在一张图上——横轴取对数曝光 log E,纵轴取密度 D——你会得到一条 S 形曲线:<strong>H&amp;D 特性曲线</strong>(Hurter–Driffield curve)。趾部(暗部压缩)、直线段(正常曝光)、肩部(高光滚降),整个&quot;胶片味&quot;的影调骨架都在这条曲线里。柯达为每一款胶片公开发布这条曲线,连同光谱敏感度、染料吸收谱,装在叫 datasheet 的技术文件里。</p>
+<p><strong>这是本项目最重要的一个观察:datasheet 本身就是胶片的&quot;绝对真值&quot;。</strong> 你不需要拍一张照片,就已经拥有了这款胶片被物理定义的方式。</p>
+<h3 id="12-三条已有路线各缺一角">1.2 三条已有路线,各缺一角</h3>
+<table>
+  <thead>
+      <tr>
+          <th>路线</th>
+          <th>代表</th>
+          <th>做法</th>
+          <th>缺陷</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>经验查找表</td>
+          <td>商业软件 Dehancer / Filmbox</td>
+          <td>拟合 1D/3D LUT</td>
+          <td>对物理参数不可微;换一款没见过的胶片就失效</td>
+      </tr>
+      <tr>
+          <td>图像到图像神经网络</td>
+          <td>FilmNet (IJCAI 2023)、sillystill</td>
+          <td>配对数据训 U-Net 式映射</td>
+          <td>黑箱、不可解释;需要大量对齐的&quot;数码–胶片&quot;配对,而这种数据被冲洗和扫描的主观性污染</td>
+      </tr>
+      <tr>
+          <td>前向物理模拟器</td>
+          <td>spektrafilm(原名 agx-emulsion)</td>
+          <td>从 datasheet 出发做光谱前向模拟</td>
+          <td><strong>不可训练</strong>:无 autograd、无跨胶片表示,是一台只能往前跑的机器</td>
+      </tr>
+  </tbody>
+</table>
+<p>学术侧的最近邻是 <strong>Emulating Emulsion</strong>(Jang, Karaimer &amp; Brown, SIGGRAPH Posters 2025):约 30 个 sigmoid 参数,用 scipy 的最小二乘在 3168 对实拍色卡上拟合。它物理化了,但<strong>不可微</strong>(least-squares 不是梯度下降的计算图),而且每款胶片一套独立参数——<strong>无法在胶片之间插值</strong>。</p>
+<h3 id="13-空着的第四个位置">1.3 空着的第四个位置</h3>
+<p>把上面的缺陷取反,就得到 Lumen-Neuro 占的位置——四件套组合:</p>
+<ol>
+<li><strong>端到端可微</strong>:整条管线是一张 autograd 计算图,任何输出对任何物理参数都能求导;</li>
+<li><strong>跨胶片</strong>:一个模型同时表达多款胶片,并能插值出&quot;中间胶片&quot;;</li>
+<li><strong>datasheet 标定</strong>:监督信号全部来自公开技术数据表 + 光谱合成,<strong>零实拍</strong>;</li>
+<li><strong>多后端可复现</strong>:MPS(Apple 芯片)↔ CPU 数值 parity 实测验证,CUDA 路径就绪。</li>
+</ol>
+<p>截至 2026 年 7 月的两轮实时查新(不是凭印象):这个组合无人占据。窗口正在收窄——Emulating Emulsion 是 poster,poster→full paper 是学界标准动作;spektrafilm 是 GPLv3 且社区活跃,随时可能有人给它加 autograd——这也是为什么 arXiv 时间戳被排到最高优先级(§10)。</p>
+<blockquote>
+<p>💼 <strong>简历可聊点</strong>:&ldquo;我先做了竞品扫描,发现可微、跨胶片、纯 datasheet 标定这个组合在文献里是空的,然后围绕这个空位设计了最小可发表单元。&rdquo; —— 面试官听到的是:你会做 literature positioning,不是闷头写代码。</p></blockquote>
+<hr>
+<h2 id="2-核心思想pidr--物理方程当网络层">2. 核心思想:PIDR —— 物理方程当网络层</h2>
+<h3 id="21-一句话版本">2.1 一句话版本</h3>
+<p><strong>Physics-Informed Differentiable Rendering (PIDR)</strong>:把闭式物理方程和一个小神经网络组装进<strong>同一张 autograd 计算图</strong>,物理方程负责所有能用一行数学写出来的现实,神经网络只负责公式写不出来的那一小块。</p>
+<p>这不是比喻。在 PyTorch 里,<code>10 ** (-D)</code>(Beer–Lambert 透过率)和 <code>nn.Linear</code> 在 autograd 眼里是同一类东西——都是可求导的算子。所以&quot;物理方程当网络层&quot;在工程上是字面成立的:你把 Henyey–Greenstein 相位函数、cos⁴ 暗角、Cauchy 色散写成 <code>nn.Module</code>,反向传播照常穿过它们。</p>
+<h3 id="22-为什么这条路值得走三点-justification出自项目设计文档">2.2 为什么这条路值得走(三点 justification,出自项目设计文档)</h3>
+<p><strong>数据效率</strong>。一条神经网络要看一万张夜景照片才能&quot;记住&quot;的规律(长曝光偏色),用 Schwarzschild 定律 E = I·tᵖ 一行闭式就精确表达了。在 datasheet 数据量极小(单款胶片 &lt; 1 MB)的场景里,结构先验比参数量更决定模型上限。</p>
+<p><strong>可解释性</strong>。每个物理参数对应明确物理量:活化能 Eₐ 有单位 kJ/mol,倒易律指数 p 无量纲且文献值 0.7–0.9,散射不对称度 g 是相位函数参数。审稿人可以核对这些数字是否落在物理合理区间——对比黑箱网络&quot;这 256 个权重为什么是这些值&quot;,PIDR 在 reviewer 面前有天然说服力。</p>
+<p><strong>外推能力</strong>。物理公式对未见数据有严格外推:20°C 拟合的 Arrhenius 曲线在 40°C 仍然成立,因为物理规律本身外推。黑箱模型在训练分布之外几乎总是崩溃。</p>
+<p>方法论锚点是 Raissi et al. 2019 的 PINN(Physics-Informed Neural Networks):物理定律作为硬性结构先验,神经组件建模方程表达不了的残差。</p>
+<h3 id="23-一个命名的故事为什么不叫-neuro-symbolic">2.3 一个命名的故事:为什么不叫 Neuro-Symbolic</h3>
+<p>项目最初叫&quot;神经符号&quot;,想强调神经 + 物理混合。但 ML 社区严格定义的 neuro-symbolic AI 指<strong>神经网络 + 符号逻辑/知识图谱</strong>(Garcez &amp; Lamb 2020),做的是符号推理与感知网络的耦合——和&quot;可微物理方程 + 学习先验&quot;不是一码事。CVPR 审稿人按严格定义挑字眼的概率不低,一旦被质疑,整篇论文的方法论标签会陷入澄清泥潭。</p>
+<p>2026-04-22,全项目统一改称 PIDR,直接挂在 Raissi 2019 的学术正典下——引用链更短,争议更小。这个决策本身留在 WORKLOG 里,连&quot;为什么放弃旧名&quot;都写了完整段落。<strong>命名是论文的第一道防御工事。</strong></p>
+<h3 id="24-95-结构预焙论点">2.4 &ldquo;95% 结构预焙&quot;论点</h3>
+<p>传统深度学习:结构几乎为零,一切靠数据喂出来。PIDR 反过来:<strong>物理约束预焙了约 95% 的结构</strong>,剩下的只是有界的可学旋钮。整个 M2 阶段,可训练的东西只有一个——FilmINR(§4)。其余全部算子跑在文献先验值上,冻结,但<strong>仍在计算图里</strong>——梯度穿过它们,只是不更新它们。</p>
+<p>这就是&quot;differentiability is what neural networks do&quot;这句项目内部口号的含义:可微性不是神经网络的专利,是计算图的属性;把物理层接进图里,你就得到了一个大部分结构由物理定律书写、只有一小块由数据书写的&quot;网络&rdquo;。</p>
+<hr>
+<h2 id="3-数据哲学零实拍datasheet-即真值">3. 数据哲学:零实拍,datasheet 即真值</h2>
+<h3 id="31-两个被否掉的显然做法定位决策原文">3.1 两个被否掉的&quot;显然做法&quot;(定位决策原文)</h3>
+<p><strong>为什么不用风景配对数据做监督学习</strong>:严格对齐的&quot;数码–胶片&quot;配对数据集在开源世界不存在;即使自己拍,也会被实验室冲洗的主观性和扫描仪反相算法的不确定性污染。项目改用<strong>光谱公式合成数据</strong>——色卡反射率 × 光源光谱 × 胶片敏感度的波长积分——直接得出理论配对,精度高于任何实拍,且零对齐误差。</p>
+<p><strong>为什么不走 MIT-Adobe FiveK 这类通用图像翻译路径</strong>:FiveK 的&quot;专家修图&quot;本质是 Lightroom 滑块(曲线 + 色调),不包含 halation(高光晕染)、颗粒空间结构、Mackie lines。在 FiveK 上训练会让所有物理模块收敛到无效状态——项目会自动降级成一张 3D LUT。</p>
+<h3 id="32-数据是怎么来的从-pdf-到-csv-到张量">3.2 数据是怎么来的:从 PDF 到 CSV 到张量</h3>
+<p>流程只有三步,但每一步都有机械可验收标准:</p>
+<ol>
+<li><strong>手工点图</strong>:用 WebPlotDigitizer 从柯达 H-1 系列 datasheet PDF(2022 年 3 月版:H-1-5219 / 5207 / 5213 / 5203)里,把 H&amp;D 曲线、光谱敏感度、染料吸收谱逐点点成 CSV。每张图 5–10 分钟。</li>
+<li><strong>schema 校验</strong>:<code>lumen_neuro/datasheet/</code> 子包定义了三类 CSV 的硬结构——波长网格强制 380–780 nm、10 nm 步长、恰好 41 点(与 colour-science 库默认光谱形状对齐,后续积分零重采样);H&amp;D 的 log_exposure 列<strong>严格单调递增</strong>;密度范围 0.0–3.0;film_id 必须匹配小写下划线正则。任何违规抛 <code>ValidationError</code>,带定位信息。</li>
+<li><strong>光谱合成监督</strong>:ColorChecker 24 色块反射率 R(λ) × D65 光源 I(λ) × 每款胶片的光谱敏感度 S(λ),<code>torch.trapz</code> 在 41 个波长点上数值积分,得到 (数码 RGB, 每层 log 曝光量, 胶片密度) 三元组。合成集共 96,000 条,84,000 训练 / 12,000 验证。</li>
+</ol>
+<p>关键设计:<strong>只用单一 D65 光源</strong>。因为 FilmINR 里没有任何光源相关参数——光源 SPD 在上游光谱积分阶段就被积掉了(决策 D54)。多光源数据服务的是场景 Router,而 Router 整体推到下一篇论文(D66)。这类&quot;哪个数据服务哪个组件&quot;的归属判断,是防止数据集无意义膨胀的关键。</p>
+<h3 id="33-claim-a--claim-b一条不许跨的边界">3.3 claim A / claim B:一条不许跨的边界</h3>
+<p>本篇论文(claim A)证明三件事:<strong>物理正确性、端到端可微性、跨胶片新颖性——全部在合成的、datasheet 标定的数据上</strong>。它<strong>不</strong>主张对真实冲洗胶片照片的保真度——那是 claim B,需要受控实拍(FE2 相机 + Vision3 胶卷 + ECN-2 冲洗 + 翻拍扫描),属于下一篇论文(M3)。</p>
+<p>为什么要把边界钉死?因为往 claim A 里掺一点实拍数据去&quot;讨好&quot;CVPR,会同时毁掉两篇论文:第一篇失去&quot;零实拍&quot;的干净性,第二篇失去完整的 sim-to-real 故事。论文里连 ΔE2000 色差指标都被显式标注为&quot;合成密度域 proxy,不是成片色准&quot;(§7)——诚实不是姿态,是写进正文的机制。</p>
+<blockquote>
+<p>💼 <strong>简历可聊点</strong>:&ldquo;我把项目切成两个可发表单元并钉死边界:claim A 纯合成可复现,claim B 承担 sim-to-real 风险。这样即使第二阶段实验失败,第一篇的贡献依然独立成立。&rdquo; —— 这是研究风险管理,比&quot;我训了个模型&quot;高一个层级。</p></blockquote>
+<hr>
+<h2 id="4-中心创新filminr-与中间胶片">4. 中心创新:FilmINR 与&quot;中间胶片&quot;</h2>
+<h3 id="41-把胶片身份变成一个-16-维向量">4.1 把&quot;胶片身份&quot;变成一个 16 维向量</h3>
+<p>传统做法里,每款胶片是一张独立的表(LUT)或一组独立的参数(Emulating Emulsion 的 30 个 sigmoid 参数)。表和表之间没有桥——你无法问&quot;Portra 和 Ektar 的中间是什么&quot;。</p>
+<p>FilmINR 的回答:<strong>让所有胶片共享一个 MLP 主干,每款胶片只保留一个 16 维可学习向量(film embedding)作为&quot;身份证&quot;</strong>。前向映射是:</p>
+<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">(</mo><mi>log</mi><mo>⁡</mo><msub><mi>E</mi><mi>R</mi></msub><mo separator="true">,</mo><mtext> </mtext><mi>log</mi><mo>⁡</mo><msub><mi>E</mi><mi>G</mi></msub><mo separator="true">,</mo><mtext> </mtext><mi>log</mi><mo>⁡</mo><msub><mi>E</mi><mi>B</mi></msub><mo separator="true">,</mo><mtext> </mtext><msub><mi mathvariant="bold">e</mi><mi>f</mi></msub><mo stretchy="false">)</mo><mtext> </mtext><mo>⟶</mo><mtext> </mtext><mo stretchy="false">(</mo><msub><mi>D</mi><mi>R</mi></msub><mo separator="true">,</mo><mtext> </mtext><msub><mi>D</mi><mi>G</mi></msub><mo separator="true">,</mo><mtext> </mtext><msub><mi>D</mi><mi>B</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(\log E_R,\ \log E_G,\ \log E_B,\ \mathbf{e}_f)\ \longrightarrow\ (D_R,\ D_G,\ D_B)</annotation></semantics></math></span><p>输入三层的对数曝光量 + 胶片身份向量,输出三层密度。这就是一个 INR(Implicit Neural Representation,隐式神经表示):把离散的 datasheet 采样点,升维成一个<strong>连续、无限分辨率</strong>的响应函数——概念源头是 NeRF(Mildenhall et al. 2020)把场景表示为坐标的连续函数,这里坐标换成了 (曝光量, 胶片身份)。</p>
+<p>而因为 embedding 空间是连续的,<strong>线性插值两款胶片的向量,就得到一张新的响应面——一款物理上说得通的&quot;中间胶片&quot;</strong>。这是 sigmoid 参数表做不到的事,也是本文的核心贡献。</p>
+<h3 id="42-真实代码lumen_neuroemulsioninrpy">4.2 真实代码:<code>lumen_neuro/emulsion/inr.py</code></h3>
+<p>模型本体出人意料地小。以下是仓库里的真实代码(节选):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">FilmINR</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;Coordinate-MLP for film H&amp;D characteristic curve&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_E_min</span><span class="o">=-</span><span class="mf">3.59</span><span class="p">,</span> <span class="n">log_E_max</span><span class="o">=+</span><span class="mf">1.42</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="n">num_films</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">film_emb_dim</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="n">hidden_dim</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">num_hidden_layers</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># buffers for normalization(跟随 state_dict,save/load 自动同步)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&#34;log_E_min&#34;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">log_E_min</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s2">&#34;log_E_max&#34;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">log_E_max</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># film embedding(M1: num_films=1)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">film_emb</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">num_embeddings</span><span class="o">=</span><span class="n">num_films</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="o">=</span><span class="n">film_emb_dim</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># MLP: input (3 log_E + film_emb) → num_hidden×(Linear+GELU) → Linear(3)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">...</span>
+</span></span></code></pre></div><p>四个值得逐行看的设计决策:</p>
+<p><strong>① <code>register_buffer</code> 装归一化范围(决策 A4)</strong>。log_E 的 min/max 不是 Python 常量,而是注册进 <code>state_dict</code> 的 buffer——checkpoint 保存/加载时自动跟随。这样换机器、换数据集重载模型,归一化不会悄悄错位。一个小细节,消灭一整类&quot;加载后精度莫名下降&quot;的 bug。</p>
+<p><strong>② <code>nn.Embedding(num_films, 16)</code> 就是跨胶片机制的全部</strong>。M1 阶段 <code>num_films=1</code>(单胶片 Portra 400 验证架构),M2 只把 1 改成 4——架构一个字不动。这是当初刻意的设计:&ldquo;M1 不被跨胶片数据准备阻塞,但架构不会走歪&rdquo;。</p>
+<p><strong>③ 激活函数是 GELU,不是 ReLU(决策 B1)——这是全项目最好的一堂 autograd 课</strong>。训练目标里有一个曲率正则项,需要对网络输出求<strong>二阶导</strong>。而 ReLU 是分段线性的:一阶导是阶跃,二阶导<strong>恒等于零</strong>——曲率正则会静默失效,loss 里那一项永远是 0,你却不会收到任何报错。这个坑是 spike 实验实测抓出来的,然后被固化成一条回归测试:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">test_gelu_second_derivative_nonzero</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;6. GELU 二阶导非 0(B1 spike 结论固化为回归测试)
+</span></span></span><span class="line"><span class="cl"><span class="s2">    防回归:有人把 GELU 改回 ReLU,二阶导恒 0,曲率正则失效。&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">get_device</span><span class="p">())</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">g1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">y</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">x</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">g2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">g1</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">x</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">g2</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;二阶导恒 0 —— 激活可能被改回 ReLU,曲率正则会失效(见 WORKLOG B1)&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span></code></pre></div><p>注意 <code>create_graph=True</code>:第一次求导时保留计算图,才能对导数再求导。这条测试的存在意义是<strong>把一次踩坑变成永久的护栏</strong>——未来任何人(包括未来的自己)把激活改回 ReLU,测试当场红。</p>
+<p><strong>④ 两个&quot;不做&quot;</strong>:无位置编码(B2——H&amp;D 曲线是低频光滑函数,NeRF 式高频位置编码反而引入振铃风险)、无输出激活(A5——蓝层最大密度 Dmax=3.04,套 sigmoid 会把值域封死在错误区间)。<strong>知道不加什么,和知道加什么同样重要。</strong></p>
+<h3 id="43-一次漂亮的参数算术交叉验证">4.3 一次漂亮的参数算术交叉验证</h3>
+<p>M1 单胶片版训练脚本实测打印 <strong>137,491</strong> 个参数;论文里 M2 四胶片版报 <strong>137,539</strong>。差值 = 48 = <strong>3 × 16 = 恰好三个新增的 film embedding 向量</strong>。两个数字在不同时间、不同脚本里独立记录,算术闭合——这不是抄来抄去能凑出来的,它证明了&quot;M1→M2 只扩 embedding、主干零改动&quot;这句话在权重层面是真的。</p>
+<blockquote>
+<p>💼 <strong>简历可聊点</strong>:GELU vs ReLU 的二阶导故事是完美的面试素材——它同时展示了你懂 autograd 机制(<code>create_graph</code>)、懂损失函数设计(曲率正则为什么需要二阶导)、懂工程防御(把结论固化成回归测试)。三分钟讲完,层层递进。</p></blockquote>
+<hr>
+<h2 id="5-代码库解剖一条计算图上的十四个模块">5. 代码库解剖:一条计算图上的十四个模块</h2>
+<h3 id="51-目录地图">5.1 目录地图</h3>
+<pre tabindex="0"><code>lumen_neuro/
+├── _backend.py            # 设备/精度单一来源(MPS/CUDA/CPU 抽象)
+├── datasheet/             # CSV schema + 防御性 loader(数据契约层)
+├── io/                    # RAW 线性解析 / albedo / depth
+├── spectral/              # 2a Jakob2019 光谱上采样(RGB → 41 点光谱)
+├── emulsion/              # 乳剂物理层
+│   ├── spectral_integral.py   # 2b ∫I·R·S dλ 波长积分(torch.trapz)
+│   ├── inr.py                 # ★ FilmINR 本体
+│   ├── inr_losses.py          # 4 项损失(H&amp;D / 合成色卡 / 单调 / 曲率)
+│   ├── crosstalk.py           # 层间串扰 3×3 矩阵
+│   ├── halation.py            # 高光晕染(Henyey-Greenstein PSF)
+│   ├── callier.py             # Callier 散射(共享 HG 实现)
+│   ├── reciprocity.py         # 倒易律失效(Schwarzschild)
+│   ├── reaction_diffusion.py  # 显影 PDE(Arrhenius 速率)
+│   └── grain.py               # 颗粒(Boolean Model + Gumbel 松弛)
+├── optics/                # 镜头光学层
+│   ├── defocus.py             # 弥散圆散焦(CoC,视差驱动)
+│   ├── zernike.py             # Zernike 像差(Noll Z5–Z15)
+│   ├── dispersion.py          # Cauchy 色散(紫边根因)
+│   ├── vignetting.py          # cos⁴ 暗角(闭式,零参数)
+│   └── bokeh.py               # 焦外成像
+├── pipeline.py            # ★ LumenNeuroFilm:全链封装 nn.Module
+├── router.py              # 场景路由(M2 默认关闭)
+├── dodging_burning.py     # 可微加光减光(M2 默认关闭)
+scripts/
+├── synth_pairs.py         # 光谱合成配对数据生成
+├── train_inr.py           # M1 单胶片训练
+├── train_m2.py            # M2 四胶片联合训练
+└── integrate_5_4.py       # ★ 全管线集成验证(G1–G5 闸门)
+tests/                     # 333 个测试(最终基线)
+</code></pre><p>三个 ★ 是理解全项目的最短路径:<code>inr.py</code>(学什么)→ <code>pipeline.py</code>(怎么串)→ <code>integrate_5_4.py</code>(怎么验)。</p>
+<h3 id="52-_backendpy三台机器一套代码">5.2 <code>_backend.py</code>:三台机器,一套代码</h3>
+<p>项目要在三种硬件上跑:M1 Pro MacBook(MPS)、未来的 RTX(CUDA)、以及任何 CPU。设备管理如果散落在各文件里(<code>.cuda()</code>、<code>.to(&quot;mps&quot;)</code> 满天飞),迁移时就是灾难。解法是<strong>单一来源 + 首次调用冻结</strong>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_detect_device</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">override</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&#34;LUMEN_DEVICE&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">override</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">override</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&#34;cuda&#34;</span><span class="p">,</span> <span class="s2">&#34;mps&#34;</span><span class="p">,</span> <span class="s2">&#34;cpu&#34;</span><span class="p">}:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;LUMEN_DEVICE must be cuda|mps|cpu, got </span><span class="si">{</span><span class="n">override</span><span class="si">!r}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">override</span> <span class="o">==</span> <span class="s2">&#34;cuda&#34;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&#34;LUMEN_DEVICE=cuda but torch.cuda.is_available() is False&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">...</span>
+</span></span></code></pre></div><p>三个设计点:</p>
+<p><strong>环境变量可覆盖,但覆盖必须合法</strong>——<code>LUMEN_DEVICE=cuda</code> 在没有 CUDA 的机器上直接 RuntimeError,而不是静默回落 CPU 让你以为在用 GPU。<strong>首次调用冻结</strong>——<code>get_device()</code> 第一次被调用后全局锁定,管线跑到一半设备不会被悄悄换掉;<code>reset_backend()</code> 只开放给测试。<strong>MPS 上显式拒绝半精度</strong>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&#34;mps&#34;</span> <span class="ow">and</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">bfloat16</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="sa">f</span><span class="s2">&#34;LUMEN_DTYPE=</span><span class="si">{</span><span class="n">override</span><span class="si">}</span><span class="s2"> requested but MPS does not reliably &#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;support it for this pipeline&#39;s ops. Use fp32.&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>这条拒绝不是保守主义,是实测结论:Phase 2b 的 <code>torch.trapz</code> 光谱积分在 MPS fp16 上累积误差 &gt; 1e-3,强行开半精度会让整条光谱管线失真。<strong>宁可报错,不可失真。</strong></p>
+<p>配套还有一条&quot;宪法级&quot;测试 <code>test_no_device_literals.py</code>:用正则机械扫描全部生产代码,<strong>禁止任何设备字面量</strong>(<code>.cuda()</code>、<code>torch.device(&quot;mps&quot;)</code>、<code>ti.init(arch=...)</code> 等),只有 <code>_backend.py</code> 自身豁免。规则不靠自觉,靠 CI。</p>
+<h3 id="53-数据契约层datasheet-loader-的防御性设计">5.3 数据契约层:datasheet loader 的防御性设计</h3>
+<p>研究代码常见病是&quot;CSV 读进来就用&quot;。本项目的 loader 是另一个极端——每次加载都硬校验:波长网格必须 380–780 nm / 10 nm / 41 点(带容差)、首列严格单调、逐列取值域检查、finiteness(禁 NaN/Inf)、film_id 正则匹配,违规抛错并带定位。管线内部的算子同样如此,<code>spectral_integral.py</code> 里连反射率都要验:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">vmin</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">reflectance</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">vmin</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1e-6</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">raise</span> <span class="n">SpectralIntegralError</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="sa">f</span><span class="s2">&#34;reflectance min=</span><span class="si">{</span><span class="n">vmin</span><span class="si">}</span><span class="s2"> &lt; 0 (reflectance must be non-negative)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">vmax</span> <span class="o">&gt;</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="mf">1e-3</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">raise</span> <span class="n">SpectralIntegralError</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="sa">f</span><span class="s2">&#34;reflectance max=</span><span class="si">{</span><span class="n">vmax</span><span class="si">}</span><span class="s2"> &gt; 1.0 (reflectance bounded by unity)&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>反射率是物理量,物理量有界——<strong>代码里的每一次 raise,都是一条物理定律在站岗</strong>。手工点图的数据(WebPlotDigitizer 出品,人手会抖)经过这层契约,才有资格进计算图。</p>
+<h3 id="54-pipelinepylumenneurofilm-的前向链">5.4 <code>pipeline.py</code>:LumenNeuroFilm 的前向链</h3>
+<p>全链封装成一个 <code>nn.Module</code>,前向顺序(仓库 docstring 原文):</p>
+<pre tabindex="0"><code>log_E (B,3,H,W) + disparity (B,1,H,W)
+    → [可选 5.3 D&amp;B:log_E += Σ masks·δ]        # M2 默认 off
+    → [可选 4.3 Reciprocity(Schwarzschild)]      # M2 默认 off
+    → FilmINR (2c.2)          ← 唯一被训练的组件
+    → clamp_min(0)
+    → Crosstalk 3×3           ← 冻结在单位阵附近
+    → clamp_min(0)
+    → Halation (HG PSF)       ← 冻结文献先验
+    → clamp_min(0)            ← D-spike-5.1-X(§8 有故事)
+    → Defocus (CoC)
+    → Zernike + Cauchy 色散
+    → clamp_min(0)
+    → Vignetting (cos⁴)       ← 闭式,零参数
+    → Bokeh
+    → clamp_min(0)
+    → CallierEffect
+    → output (B,3,H,W)
+</code></pre><p>读这条链要抓三件事:</p>
+<p><strong>颜色/密度链在前,空间光学链在后</strong>——先决定&quot;每个像素多黑&quot;,再决定&quot;黑怎么在空间里晕开&quot;。这是物理顺序,不是工程便利。</p>
+<p><strong>密度非负是不变量</strong>:五处 <code>clamp_min(0)</code> 不是装饰——密度是物理量,不能为负;而 FFT 卷积会产生 ~1e-13 量级的数值微负(§8.3 讲这个 bug 怎么被抓到的)。</p>
+<p><strong>可选模块是 config gate,不是注释掉的代码</strong>:<code>use_reciprocity</code> / <code>use_router</code> / <code>use_db</code> 三个开关默认 False,窄 claim A 的边界在代码结构里是<strong>可执行的</strong>——不是&quot;论文里说没训&quot;,而是&quot;优化器物理上拿不到这些参数&quot;(§6)。</p>
+<p>参数账本同样精确:管线合计 137,525 个数值(= FilmINR 的 137,491 + 空间链 34 个物理参数);readme 早期写&quot;约 50 个物理参数&quot;,差的 13 个 = 未接入前向链、推到 M3 的化学模块——连这个差值都在 WORKLOG 里有对账条目(立场 Z:文档字面与实现的偏差只登记、不回改历史)。</p>
+<h3 id="55-代码如何与文档互相咬合">5.5 代码如何与文档互相咬合</h3>
+<p>这个仓库有个罕见特征:<strong>几乎每个文件的 docstring 都在引用文档坐标</strong>。<code>inr.py</code> 头部写&quot;按 WORKLOG 2026-05-15 (晚 2) 条目&quot;;<code>pipeline.py</code> 写&quot;按 readme.md L194/L201/L202 字面&quot;;<code>defocus.py</code> 的 D31 决策注释里连三个被否掉的候选方案(A1-a/A1-b/A1-c)和否决理由都留着。</p>
+<p>三份文档各司其职:<strong>readme.md</strong> 是任务清单(Phase 0–7 checklist,每项完成后回填完成日期 + 文件路径);<strong>readme_complementary.md</strong> 是设计解释(每个 Phase 固定回答五问:为什么做/怎么做/引用什么/数据在哪/哪里要训练);<strong>WORKLOG.md</strong> 是时间顺序的决策台账(产出/决策/遗留三栏,面向未来的自己)。代码引用文档、文档索引代码,任何一个&quot;为什么&quot;最多两跳可达。这就是&quot;我能从文章里找到答案&quot;背后的机制——因为项目本身就是这样组织的。</p>
+<hr>
+<h2 id="6-训练只训一个组件以及为什么这很难得">6. 训练:只训一个组件,以及为什么这很难得</h2>
+<h3 id="61-损失函数四项每项有名有姓">6.1 损失函数:四项,每项有名有姓</h3>
+<pre tabindex="0"><code>L = λ_HD·L1(datasheet H&amp;D 散点)      λ_HD   = 10     ← 主监督:曲线必须对上
+  + λ_synth·L1(合成 ColorChecker)     λ_synth = 1     ← 颜色一致性
+  + λ_mono·单调性正则                  λ_mono  = 0.01  ← 曝光越多密度不许降
+  + λ_curv·曲率正则                    λ_curv  = 0.001 ← S 形要平滑(需二阶导!)
+</code></pre><p>权重比 10:1:0.01:0.001 的含义:datasheet 是绝对权威(×10),合成色卡是辅助(×1),两个正则是软护栏(小权重,防病态不抢主导)。训练全程 mono/curv 两项被压在 1e-3–1e-2 区间,loss 曲线平稳无尖峰——正则在&quot;守夜&quot;,没有&quot;抢戏&quot;。</p>
+<p>这里还有一条 lesson:最初想写一个&quot;构造已知单调的网络来验证正则方向&quot;的单元测试,<strong>连续四次构造尝试方向都错</strong>——多层 GELU 网络的单调性根本不可控。最终决策是删掉这条测试,改由训练时的 mono_viol 实测指标兜底。教训入了 WORKLOG 头条纪律:<strong>测不了的东西不硬测,换一个能测的量</strong>。</p>
+<h3 id="62-只训-inr是结构性的不是口头的">6.2 &ldquo;只训 INR&quot;是结构性的,不是口头的</h3>
+<p><code>train_m2.py</code> 的优化器<strong>只接收 FilmINR 的参数</strong>。Crosstalk 矩阵在计算图里(梯度穿过它),但不在 optimizer 的 param group 里;全部空间光学参数以文献值初始化后冻结。训练协议里写着三条护栏检查:①在训参数清单必须 = FilmINR 权重 + 4 个 embedding 向量,一个不多;②Crosstalk M 训练后必须仍停在单位阵附近,偏离即红旗;③任何物理参数跑出文献区间 → 停,记失察,<strong>不当成功</strong>。</p>
+<p>还有一个防&quot;神经网络抄近路&quot;的细节:<strong>分阶段训练</strong>——先单训 FilmINR + embedding 至收敛,再把 Crosstalk 以 smoke 旁路接上。如果一开始就联合,MLP 可能把本该由串扰矩阵表达的颜色耦合偷偷吸进自己的权重里,可解释性就毁了。</p>
+<h3 id="63-训练本身一台-macbook几分钟">6.3 训练本身:一台 MacBook,几分钟</h3>
+<p>137,539 参数 + 84,000 条合成样本,在 M1 Pro 的 MPS 后端上 5,000 步分钟级跑完;log_E 归一化范围由运行时数据实算得 [−4.652, 2.136](四款胶片合并后比 M1 单款的 [−3.59, +1.42] 更宽)。最优验证 loss <strong>0.0105</strong>,出现在第 <strong>4,800</strong> 步,取该 checkpoint。</p>
+<p><strong>没有 GPU 集群,没有超参搜索,没有 wandb 大盘。</strong> 当物理预焙了 95% 的结构,剩下的优化问题小到一台笔记本就是完整的实验平台——这本身就是 PIDR 论点的一次现身说法。</p>
+<hr>
+<h2 id="7-实验结果所有数字一处集齐">7. 实验结果:所有数字,一处集齐</h2>
+<h3 id="71-主表一个模型四款胶片">7.1 主表:一个模型,四款胶片</h3>
+<table>
+  <thead>
+      <tr>
+          <th>指标</th>
+          <th>500T (5219)</th>
+          <th>250D (5207)</th>
+          <th>200T (5213)</th>
+          <th>50D (5203)</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>H&amp;D 复现 RMSE</td>
+          <td><strong>0.0068</strong></td>
+          <td><strong>0.0056</strong></td>
+          <td><strong>0.0042</strong></td>
+          <td><strong>0.0063</strong></td>
+      </tr>
+      <tr>
+          <td>ΔE2000(合成密度域 proxy)</td>
+          <td>0.53</td>
+          <td>0.34</td>
+          <td>0.77</td>
+          <td>0.57</td>
+      </tr>
+  </tbody>
+</table>
+<p>怎么读:<strong>一个共享主干 + 四个 16 维向量,把四族特性曲线全部压到 RMSE &lt; 0.007</strong>,且四款误差同量级、无一掉队——说明没有哪款胶片&quot;霸占&quot;了主干容量。ΔE2000 从初始化的 ≈55 收敛到 &lt;1;但注意论文正文的显式声明:这是<strong>合成密度域 proxy</strong>,监控拟合期颜色一致性用,<strong>不是</strong>对真实冲洗成片的色准测量(那是 claim B)。</p>
+<h3 id="72-核心证据插值单调性中间胶片是真的吗">7.2 核心证据:插值单调性——&ldquo;中间胶片&quot;是真的吗</h3>
+<p>这是全文最重要的一张表。检验逻辑:如果 embedding 空间只是&quot;背下了四张表&rdquo;,插值中间点会得到乱码;如果它学到了<strong>结构化的连续胶片流形</strong>,那么(a)插值出的密度场应当平滑,(b)<strong>粗糙度应随两款胶片的物理距离单调增长</strong>。测量量:embedding 插值路径上密度场的最大步长(越小越平滑)。</p>
+<table>
+  <thead>
+      <tr>
+          <th>插值对</th>
+          <th>物理关系</th>
+          <th>密度场最大步长</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>500T ↔ 250D</td>
+          <td>近(工艺相邻)</td>
+          <td><strong>0.0439</strong></td>
+      </tr>
+      <tr>
+          <td>250D ↔ 50D</td>
+          <td>同 Status-M 测密对照组</td>
+          <td><strong>0.0528</strong></td>
+      </tr>
+      <tr>
+          <td>500T ↔ 50D</td>
+          <td>远(钨丝灯平衡 ↔ 日光平衡)</td>
+          <td><strong>0.0613</strong></td>
+      </tr>
+  </tbody>
+</table>
+<p>排序<strong>单调</strong>:近 &lt; 对照 &lt; 远,且全部落在 0.04–0.06 的窄带内、无断崖。插值出的 H&amp;D 曲线族随插值系数 α 平滑形变、<strong>无交叉</strong>(论文图 2)。这三个数字加起来就是&quot;结构化流形而非记忆表格&quot;的签名——也是 §1.3 四件套里&quot;跨胶片&quot;那一件的定量证明。</p>
+<p>实验设计里还有个细节:中间那行&quot;同 Status-M 对照组&quot;是免费加的科学对照——四款里 500T 的 datasheet 用 ECN-2 测密口径、其余三款用 Status-M(这是查官方 datasheet 原文核实的,不是假设,§8.6),于是补一组不含 500T 的插值对,验证排序不是测密口径差造的假。</p>
+<h3 id="73-可复现性跨后端-parity">7.3 可复现性:跨后端 parity</h3>
+<p>FilmINR 级(N=512,四胶片)MPS↔CPU 对比:前向 max|Δ| = <strong>3.7×10⁻⁸</strong>,embedding 梯度 <strong>3.5×10⁻¹⁰</strong>,首层权重梯度 <strong>9.3×10⁻¹⁰</strong>,loss 差 <strong>0</strong>——比项目自定的 1e-3 后端容差<strong>严格约五个数量级</strong>。在 Mac 上训的模型,不是&quot;只在 Mac 上对&rdquo;。(模块级 spike 另有记录:halation 4.77e-7、defocus 7.15e-7、zernike 1.49e-8——全部过 FFT 的算子都单独验过。)</p>
+<h3 id="74-集成闸门g1g5">7.4 集成闸门:G1–G5</h3>
+<p>M2 的第三块验收来自 <code>scripts/integrate_5_4.py</code>:把训好的四胶片 INR <strong>注入</strong>完整管线(空间链冻结文献先验),端到端跑 autograd。五道闸门,真实代码:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># G1 forward 串通:输出形状正确 + 全 finite + 密度非负</span>
+</span></span><span class="line"><span class="cl"><span class="n">g1</span> <span class="o">=</span> <span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> \
+</span></span><span class="line"><span class="cl">     <span class="ow">and</span> <span class="nb">bool</span><span class="p">((</span><span class="n">out</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># G2/G3 端到端 autograd:loss 反传后——</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   INR 参数拿到非零梯度   → 收敛路径穿透整条管线</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   冻结物理参数梯度 finite → 物理层真的连在计算图上</span>
+</span></span><span class="line"><span class="cl"><span class="n">loss</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># G5 隔离:全参数快照,forward+backward 后逐位不变</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   (无 optimizer、无 .step() —— 验证&#34;梯度流过但不更新&#34;)</span>
+</span></span><span class="line"><span class="cl"><span class="n">pre</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pipe</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">()}</span>
+</span></span></code></pre></div><p>G1–G5 全绿(MPS),12 个冻结物理参数 finite 且连接在图上。至此 M2 的三条完成标志闭合:<strong>四胶片 INR 达标 + 全管线可微验证 + 物理参数可解释</strong>。注意诚实口径:全管线集成验证是 MPS-only,跨后端 parity 是 FilmINR 级——论文里这两件事分开陈述,不焊在一起(这曾是审稿前自查抓出的措辞问题之一)。</p>
+<hr>
+<h2 id="8-弯路博物馆brainstorm失败与改向">8. 弯路博物馆:brainstorm、失败与改向</h2>
+<p>论文只展示终点,这一节展示路径。以下每个故事都有 WORKLOG 条目背书,不是事后美化。</p>
+<h3 id="81-从-30-项愿望清单到一个可发表单元">8.1 从 30 项愿望清单到一个可发表单元</h3>
+<p>立项原稿约 30 个任务、7 个 Phase,覆盖胶片化学、光学像差、PDE 模拟、跨平台部署——&ldquo;雄心极大但没有明确学术 contribution 聚焦&rdquo;,更像&quot;我想造一个完整胶片模拟器&quot;的愿望清单。项目自检文档里有一节标题就叫**《这个项目会脱离初衷吗?》<strong>,答案写的是:&ldquo;会,但方向是</strong>收敛<strong>不是</strong>发散**。&ldquo;整个演化史确实如此:每次改向都是砍范围、钉边界,而不是加功能。</p>
+<h3 id="82-最大的一次收窄混工艺方案被否窄-claim-a-修正">8.2 最大的一次收窄:混工艺方案被否(窄 claim A 修正)</h3>
+<p>M2 原拟胶片集是 Portra 400 + Ektar 100 + Vision3 500T + Pro 400H——横跨 C-41 和 ECN-2 两种冲洗工艺、外加多光源。后来被自己否掉:<strong>混工艺 + 混光源会把&quot;工艺信号&quot;和&quot;光源信号&quot;纠缠进 film embedding,污染它本该只表达的&quot;胶片身份&rdquo;</strong>。收窄为 4× Vision3(全 ECN-2、单 D65),身份信号才干净。配套两条决策:D54(INR 光源无关,SPD 上游已积掉)、D66(多光源数据整体推 M3,服务 Router)。</p>
+<p>这次收窄同时救了后面的实验设计:同工艺族才让 §7.2 的插值消融有清晰的物理坐标(近/对照/远)。<strong>好的实验对照,是被正确的范围决策&quot;送&quot;出来的。</strong></p>
+<h3 id="83-一个-1e-13-的幽灵clamp_min0-的故事d50">8.3 一个 1e-13 的幽灵:clamp_min(0) 的故事(D50)</h3>
+<p>集成 spike 第一次跑 G6 时报错:<code>density 必须 &gt;= 0, got min=-3.19e-13</code>。追查发现:halation 的 FFT 卷积会产生 ~1e-13 量级的数值微负,而早期原型链在 halation 后<strong>没有</strong> clamp——之前所有测试全绿,只因为固定种子 seed=525 是一条 lucky path,恰好没撞上噪声。换一个 RNG 状态,幽灵现形。</p>
+<p>修法一行:<code>x = x.clamp_min(0)</code>。但留痕三条:①D50 登记&quot;生产 wrapper 必须比原型链更 robust&rdquo;;②旧测试<strong>保留不删</strong>,作为 lucky-path 字面基线;③失察台账同型加固。一个 10⁻¹³ 的负数教的课:<strong>测试通过 ≠ 正确,可能只是运气好;fail-fast 的价值恰恰在于把运气暴露出来。</strong></p>
+<h3 id="84-两次幽灵引用击杀零编造纪律实战">8.4 两次&quot;幽灵引用&quot;击杀:零编造纪律实战</h3>
+<p><strong>Hanson 1986</strong>:一条看起来很合理的胶片文献,多轮检索 + SMPTE 索引查证后确认<strong>不存在</strong>——正式击杀,从参考文献中除名(注意区分:Hanson &amp; Brewer 1955 JOSA 橙色色罩论文是真实存在的,已单独核实保留)。<strong>Mackenzie et al.</strong>:项目文档一度把 Emulating Emulsion 归在&quot;Mackenzie&quot;名下——两轮定向检索查无此学术实体(只搜到同名电影导演),经 ACM DOI 页 + 作者主页交叉核实,真实作者是 <strong>Jang, Karaimer &amp; Brown</strong>,全项目勘误。</p>
+<p>纪律条文:引用查不到正式出处时,显式声明&quot;找不到官方来源&quot;,提供已知字段供作者用大学数据库检索,<strong>绝不静默降级、绝不编造卷期页码</strong>。bib 里所有未核实项显式标 <code>[TODO]</code>。在大模型时代,这条纪律的含金量只会越来越高。</p>
+<h3 id="85-长会话失察三连文档纪律为什么存在">8.5 长会话失察三连:文档纪律为什么存在</h3>
+<p>2026-06-02 一次会话里连续三次同型失误,全部记入台账:①把早已拍定的 Crosstalk 处置<strong>重新开盘</strong>当&quot;待决策&quot;(实则 5 月 17 日已决);②误判&quot;四款 Vision3 datasheet 未数字化&quot;(实则磁盘上已全部就绪);③把 2c.2 的多胶片训练误编号成 5.4 的全管线训练。三次同根:<strong>长上下文里凭印象开口,没有先回查决策表和磁盘状态</strong>。补强的纪律写成一句话:&ldquo;起草任何结论前,先回查 Phase 编号定义 + 已落 WORKLOG 决策表 + 实际磁盘状态,不凭印象。&rdquo;</p>
+<p>这就是三文档体系存在的根本理由——<strong>它不是给别人看的,是给&quot;下一个会话里失忆的自己&quot;看的</strong>。截至 M2 收口,台账累计:约 70 条 D 编号偏离记录、30+ 条失察记录、25 个 commit、333 个测试通过基线。失察不是耻辱柱,是免疫系统的抗体档案。</p>
+<h3 id="86-一次反向纠错500t-的测密口径">8.6 一次反向纠错:500T 的测密口径</h3>
+<p>数字化 500T datasheet 时发现它标注 &ldquo;Densitometry: ECN-2&rdquo;,与其余三款的 Status-M 不同,第一反应是&quot;数字化笔误,归零处理&quot;。经作者提供官方 datasheet 截图 + 上网核实——<strong>是官方实标,不是笔误</strong>:5219 作为 Vision3 首作沿用独立绘图惯例,彩负本就存在 Status-M 与工艺参照密度两套口径(Kodak H-387 有换算表)。误判被撤回,结论转正:per-film 复现不受影响,跨片 ΔE 仅为 proxy,并顺势加出 §7.2 那组同 Status-M 对照插值。<strong>怀疑数据之前,先怀疑自己对数据的理解。</strong></p>
+<h3 id="87-其他入馆藏品一句话版">8.7 其他入馆藏品(一句话版)</h3>
+<p>scipy 钉版本 <code>&lt;1.15</code>(1.15 的 ufunc 签名变更破坏 colour-science——实测踩坑,非理论推演);grain 模块的 Boolean Model 用 Gumbel-sigmoid 松弛(τ=0.5)换可微性,三候选 head-to-head 实测淘汰 REINFORCE(高方差)与 STE(假稳 + 有偏);defocus 三方案对决中&quot;单调 CoC&quot;被物理否决(弥散圆是 |disp−focus| 的 V 形,不单调);spike 输入强制非退化(视差 ≠ 对焦平面、Zernike 系数 ≠ 0),防止闸门被平凡行为静默混过。</p>
+<hr>
+<h2 id="9-工程纪律作为方法论">9. 工程纪律作为方法论</h2>
+<p>如果只能带走一节,带走这节。solo 研究者没有导师查进度、没有同事 review,<strong>纪律就是你的合作者</strong>。</p>
+<p><strong>先文档再代码(先文档再代码)</strong>:每个 Phase 动工前,readme 的任务定义与 readme_complementary 的设计解释先行;代码是文档的执行,不是文档的替代。发现新想法时,先评估是否构成对三文档既定流程的偏离,需要偏离则登记 D 编号 + 理由,<strong>创新走流程,不走后门</strong>。</p>
+<p><strong>spike → production 两段式</strong>:任何有不确定性的技术点,先在 <code>/tmp</code> 写一次性 spike 脚本实测(GELU 二阶导、FFT parity、Gumbel 三候选……全部如此),锁定结论后再写生产代码,并把 spike 结论固化为回归测试。fail-fast:任何一道闸门红了,停,不带病前进。</p>
+<p><strong>单 Phase 单 commit</strong>:一次 commit 覆盖该阶段的 WORKLOG 条目 + readme 回填 + 代码 + 测试,仓库历史与决策历史一一对应。<code>git add</code> 前必跑 <code>git status</code> 逐项核对——这条铁律来自一次真实的漏提交事故(81557ac),事故本身也入了台账。</p>
+<p><strong>容差分档,不装均匀</strong>:放弃&quot;双后端差异 &lt; 1e-4&quot;的统一阈值,改为 MPS 1e-3 / CUDA 1e-4 / CPU 1e-6——因为 M1 Pro 的 MPS fp32 实测误差就在 5e-4 量级,统一 1e-4 只会让测试随机红。<strong>阈值反映实测能力,不反映愿望。</strong></p>
+<p><strong>立场 Z</strong>:文档历史措辞与实现出现偏差时,登记不回改——历史是证据,不是橱窗。</p>
+<blockquote>
+<p>💼 <strong>简历可聊点</strong>:&ldquo;我一个人维护了 70 条决策台账、30 条失察记录和 333 个测试,任何一个数字都能两跳追溯到出处。&rdquo; 这句话在面试里的分量,大于任何模型指标——因为它证明你<strong>规模化协作之前就已经在按可协作的方式工作</strong>。</p></blockquote>
+<hr>
+<h2 id="10-边界与-todo句号之前的诚实清单">10. 边界与 TODO:句号之前的诚实清单</h2>
+<h3 id="101-本文不主张的claim-边界">10.1 本文不主张的(claim 边界)</h3>
+<p>对真实冲洗胶片的保真度(claim B,M3);Router / D&amp;B / 空间光学参数的训练(在图中、冻结、未训——正文明写&quot;exactly one component is learned&quot;);倒易律模块(实现完毕、config gate 默认 off,<code>*_loss(real_data=None)</code> 一律返回 0——诚实以代码形态存在);ΔE2000 的成片色准含义(它是合成密度域 proxy);Michaelis-Menten 显影模块的 v_max/K_m(接口暴露为可学参数,<strong>本文未拟合</strong>,留待 sim2real)。</p>
+<h3 id="102-论文侧遗留-todoarxiv-push-前必修">10.2 论文侧遗留 TODO(arXiv push 前必修)</h3>
+<p>引用三处修:<code>mackenzie2025emulating</code> 改键 → <code>jang2025emulating</code>(Jang/Karaimer/Brown, SIGGRAPH Posters &lsquo;25, DOI 10.1145/3721250.3743014);agx-emulsion 更名 spektrafilm(按其 CITATION.cff 引 Zenodo DOI + 版本号);sillystill 补 repo 出处并全项目移除 Mackenzie 归属。§1 补引 FilmNet 堵住&quot;纯神经阵营&quot;的无引断言;绝对否定句&quot;No prior&hellip;&ldquo;前置 &ldquo;To our knowledge&rdquo;(查新后从建议升级为必须)。bib 所有 <code>note={TODO}</code> 填齐或删除(plainnat 会把 note 原样印进 PDF);作者行 <code>&lt;your-email&gt;</code> 占位落定;提交包只含 main.tex + references.bib + 两图,中文批注草稿与内部纪律注释不入包(arXiv 公开全部源文件)。Abstract 把&quot;全管线可微(MPS)&ldquo;与&quot;跨后端 parity(FilmINR 级)&ldquo;拆成两个分句。图 2 成图肉眼复核&quot;无交叉&quot;与 caption 一致。<strong>独立作者首投 cs.CV 的 endorsement 预联络——当前最高优先级的外部依赖。</strong></p>
+<h3 id="103-m3-路线图下一篇论文">10.3 M3 路线图(下一篇论文)</h3>
+<p>sim-to-real:FE2 + Micro-Nikkor 55/3.5 AI 实拍 4 款 Vision3(原厂分装、带 remjet,CineStill 严格排除——去 remjet 后物理不再匹配 datasheet);ECN-2 单店同批冲洗、禁 push/pull、卷首卷尾 0EV 色卡控制帧自证显影均匀;X-E5 + F→X 机械转接翻拍扫描,RAF 走线性解拆链(场景参考线性 RGB,变换链留痕)。先跑 <strong>process-validation roll</strong>(30 帧:11+3 档曝光扫描 + 平场 + halation 样本 + 首尾控制帧)验证全链路,再投全量。训练迁移 RTX 4090 租用(D70),先做 256² 分辨率 VRAM profiling。届时解锁的模块:reaction-diffusion PDE、grain 真监督、Router、D&amp;B、reciprocity——它们的接口早已在代码里等着(§5.4 的三个 config gate,§6 的 <code>real_data=None → 0</code>)。</p>
+<h3 id="104-文档侧遗留m3-docs-batch">10.4 文档侧遗留(M3 docs batch)</h3>
+<p>readme_complementary 末尾&quot;AI 训练分类总结表&quot;两行已被后续决策架空需加覆盖注(2c.4 Beer-Lambert 方向、4.3 倒易律数据源);readme 数据策略段多光源段落补 D66 指针;硬件表补 D68–D70 覆盖注;500T Status-M 精确偏移量待期刊库访问 H-387 / ISO 5-3 后回填。</p>
+<hr>
+<h2 id="11-结语论文一号的句号">11. 结语:论文一号的句号</h2>
+<p>回头看,这个项目真正的产出有三层。</p>
+<p><strong>表层是一个模型</strong>:137,539 个参数,四款电影胶片,RMSE &lt; 0.007,插值单调,一台 MacBook 训完。</p>
+<p><strong>中层是一个论证</strong>:当物理方程预焙了绝大部分结构,&ldquo;神经网络&quot;可以退化为一个 16 维身份向量加一个三层 MLP——而这恰恰让它第一次能回答&quot;两款胶片之间是什么&quot;这个 LUT 和 sigmoid 表都回答不了的问题。可微性不属于神经网络,属于计算图;把物理接进图里,物理就获得了被学习框架优化的资格。</p>
+<p><strong>底层是一套方法</strong>:零编造引用、先文档再代码、fail-fast、D 编号台账、claim 边界——这些听起来像官僚程序的东西,是一个 solo 研究者在没有任何外部监督的情况下,让自己的结论<strong>可信</strong>的全部手段。§8 里每一个被抓住的错误,都是这套方法在工作。</p>
+<p>窄 claim A 到此闭合。胶卷已在采购清单上,验证卷的 30 帧拍摄脚本已经写好,ECN-2 的冲洗店问题清单已经列出。<strong>句号落下的地方,正是下一个逗号。</strong></p>
+<hr>
+<h2 id="参考文献标注核实状态">参考文献(标注核实状态)</h2>
+<p><strong>已核实(有 DOI / 官方页 / 实体书在手)</strong></p>
+<ol>
+<li>Raissi, M., Perdikaris, P., Karniadakis, G. E. <em>Physics-informed neural networks…</em> J. Comput. Phys. 378 (2019) 686–707. —— PIDR 方法论锚点</li>
+<li>Jang, H. J., Karaimer, H. C., Brown, M. S. <em>Emulating Emulsion: A Compact Physically-Based Model for Film Colour.</em> SIGGRAPH Posters &lsquo;25, Article 41. DOI 10.1145/3721250.3743014. —— 最近学术邻居(经 ACM 页 + 作者主页交叉核实)</li>
+<li>Mildenhall, B. et al. <em>NeRF: Representing Scenes as Neural Radiance Fields…</em> ECCV 2020. —— INR 思想源头</li>
+<li>Volpato, A. <em>spektrafilm</em>(原名 agx-emulsion). github.com/andreavolpato/spektrafilm, v0.3.3 (2026-06-06),引用按其 CITATION.cff / Zenodo DOI。—— 前向光谱模拟器基线</li>
+<li><em>sillystill.</em> github.com/mikasenghaas/sillystill. —— image-to-image 基线(作者 Senghaas,非 Mackenzie)</li>
+<li>Henyey, L. G., Greenstein, J. L. <em>Diffuse radiation in the Galaxy.</em> ApJ 93 (1941). —— halation/Callier 相位函数</li>
+<li>Noll, R. J. <em>Zernike polynomials and atmospheric turbulence.</em> JOSA 66 (1976). —— 像差基底</li>
+<li>Hanson, W. T., Brewer 1955, JOSA. —— 橙色色罩理论(真件,与幽灵 Hanson 1986 严格区分)</li>
+<li>Hunt, R. W. G. <em>The Reproduction of Colour</em>;Mees &amp; James (ed.) <em>The Theory of the Photographic Process</em>, 4th ed.;Fujita, S. <em>Organic Chemistry of Photography</em>, Springer 2004(实体书在手)。—— 颜色科学与胶片化学正典</li>
+<li>Garcez, A., Lamb, L. <em>Neurosymbolic AI: the 3rd Wave</em> (2020). —— 命名决策依据</li>
+<li>Jang, E. et al. (2017);Maddison, C. et al. (2017), ICLR. —— Gumbel-softmax 松弛</li>
+<li>Kodak H-1-5219 / 5207 / 5213 / 5203 datasheets(2022 年 3 月版)、E-4050、H-740。—— 数据来源(非学术引用)</li>
+<li>Careaga, C., Aksoy, Y. <em>Intrinsic Image Decomposition via Ordinal Shading.</em> ACM TOG. —— 前端 albedo 分解(年份 2023/2024 以 bib 期刊库终核为准)</li>
+<li>Jakob, W., Hanika, J. 光谱上采样(bib 键 jakob2019spectral);Nimier-David et al., Mitsuba 2(bib 键 nimierdavid2019mitsuba);Yang et al., Depth Anything V2(bib 键 yang2024depthanything)。—— 卷期页码按项目零编造纪律,以期刊库终核为准</li>
+<li>Li, Chen, Wang, Pun. <em>FilmNet</em>, IJCAI 2023 + FilmSet 数据集。—— 待补引条目(§10.2)</li>
+</ol>
+<p><strong>[TODO] 待期刊库核实</strong>:Vittum 1969(DIR coupler);Johnson &amp; Goody 2011, <em>Biochemistry</em>(米氏 1913 原文英译,作者顺序以库核为准);Kodak H-387 / ISO 5-3 / ANSI PH2.18(Status-M 换算,仅当正文用到跨胶片绝对密度时需引);DoF-NeRF、Saadat 2026(defocus 决策锚点)。—— 全部已在 references.bib 以 note 显式标记,不带 TODO 不出版。</p>
+<hr>
+<h2 id="附录-a数字速查卡全部对回-worklog-ground-truth">附录 A:数字速查卡(全部对回 WORKLOG ground truth)</h2>
+<table>
+  <thead>
+      <tr>
+          <th>项</th>
+          <th>值</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>模型参数(M2 四胶片)</td>
+          <td>137,539(M1 单胶片 137,491,差 48 = 3×16 embedding)</td>
+      </tr>
+      <tr>
+          <td>训练/验证集</td>
+          <td>84,000 / 12,000 合成三元组</td>
+      </tr>
+      <tr>
+          <td>训练步数 / 最优步</td>
+          <td>5,000 / 4,800(best val 0.0105)</td>
+      </tr>
+      <tr>
+          <td>log_E 归一范围</td>
+          <td><a href="%E8%BF%90%E8%A1%8C%E6%97%B6%E5%AE%9E%E7%AE%97">−4.652, 2.136</a></td>
+      </tr>
+      <tr>
+          <td>损失权重 λ</td>
+          <td>HD 10 / synth 1 / mono 0.01 / curv 0.001</td>
+      </tr>
+      <tr>
+          <td>H&amp;D RMSE(500T/250D/200T/50D)</td>
+          <td>0.0068 / 0.0056 / 0.0042 / 0.0063</td>
+      </tr>
+      <tr>
+          <td>ΔE2000 proxy(初始 → 收敛)</td>
+          <td>≈55 → 0.53 / 0.34 / 0.77 / 0.57</td>
+      </tr>
+      <tr>
+          <td>插值粗糙度(近/对照/远)</td>
+          <td>0.0439 &lt; 0.0528 &lt; 0.0613(单调)</td>
+      </tr>
+      <tr>
+          <td>MPS↔CPU parity(前向/emb 梯度/首层梯度/loss)</td>
+          <td>3.7e-8 / 3.5e-10 / 9.3e-10 / 0</td>
+      </tr>
+      <tr>
+          <td>后端容差表</td>
+          <td>MPS 1e-3 / CUDA 1e-4 / CPU 1e-6</td>
+      </tr>
+      <tr>
+          <td>集成闸门</td>
+          <td>G1–G5 全绿(MPS);12 冻结物理参数 finite+connected</td>
+      </tr>
+      <tr>
+          <td>管线参数账</td>
+          <td>137,525 numel = 137,491(INR)+ 34(空间链)</td>
+      </tr>
+      <tr>
+          <td>测试基线 / commit / 台账</td>
+          <td>333 passed / 25 commits / ~70 D 编号 + 30+ 失察</td>
+      </tr>
+      <tr>
+          <td>M1 闭环(历史)</td>
+          <td>Portra 400:RMSE 0.0062,ΔE 0.658,pytest 83/83</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="附录-b五分钟术语表">附录 B:五分钟术语表</h2>
+<p><strong>H&amp;D 曲线</strong>:胶片的&quot;输入-输出曲线&rdquo;——横轴对数曝光量,纵轴显影后密度,S 形。<strong>乳剂层</strong>:彩色胶片的三层感光涂层(红/绿/蓝敏感)。<strong>ECN-2 / Status-M</strong>:电影负片的标准冲洗工艺 / 彩负密度测量的仪器标准口径。<strong>INR</strong>:用神经网络把离散采样表示成连续函数。<strong>embedding</strong>:把离散身份(哪款胶片)编码成可学习的连续向量。<strong>autograd / 计算图</strong>:框架自动记录每步运算并按链式法则反向求导的机制;&ldquo;可微&quot;即&quot;在这张图上&rdquo;。<strong>二阶导 / create_graph</strong>:对导数再求导;需要在第一次求导时保留计算图。<strong>clamp_min(0)</strong>:把张量下限截到 0——本项目里是&quot;密度非负&quot;这条物理定律的代码形态。<strong>halation</strong>:强光穿透胶片被片基反射回来造成的光晕(红橘边)。<strong>parity</strong>:同一计算在不同硬件后端上的数值一致性。<strong>spike</strong>:写生产代码前的一次性实测脚本,专门用来撞坑。<strong>fail-fast</strong>:一有异常立即停止,不带病前进。<strong>D 编号</strong>:对既定文档流程的偏离登记(deviation),带理由、可追溯。</p>
+<hr>
+<p><em>本文所有实验数字与决策记录以仓库 <code>WORKLOG.md</code> 为最终权威;如与本文有出入,以 WORKLOG 为准——这句话本身,就是这个项目的方法论。</em></p>
+
+            </div>
+            
+
+            <section class="tip-jar" aria-label="Support">
+  <p class="tip-lead">打赏 · 请我喝杯咖啡</p>
+  <p class="tip-sub">你的支持会让我更有动力创造更多内容。<span>Buy me a coffee — your support keeps new posts coming.</span></p>
+  <div class="tip-methods">
+    <figure class="tip-qr"><img src="/support/tip-wechat_hu_42edfc21ef27a667.jpg" alt="WeChat Pay" loading="lazy"><figcaption>微信 WeChat</figcaption></figure>
+    
+    <figure class="tip-qr"><img src="/support/tip-alipay_hu_b741bf0d9bea6612.jpg" alt="Alipay" loading="lazy"><figcaption>支付宝 Alipay</figcaption></figure>
+    </div>
+  <div class="tip-links"><a href="https://paypal.me/HenryHu0425" target="_blank" rel="noopener">PayPal</a><a href="https://ko-fi.com/henryhu0425" target="_blank" rel="noopener">Ko-fi</a><a href="mailto:weiyi.henry.hu@gmail.com">Email</a></div>
+</section>
+        </article></main>
+</div><script src="/js/post-toc.min.28e988a370e9d37fcd12ec24ce09b850691b2f5d25118669c2e60aa10461f790.js" defer></script>
+<footer class="footer">
+    <div class="footer-scheme"><div class="scheme-picker" role="group" aria-label="Colour scheme">
+  <button type="button" class="scheme-swatch sw-entan"         data-scheme="entan"         aria-label="鉛丹 Entan"          title="鉛丹 Entan"></button>
+  <button type="button" class="scheme-swatch sw-mushikuri"     data-scheme="mushikuri"     aria-label="蒸栗 Mushikuri"      title="蒸栗 Mushikuri"></button>
+  <button type="button" class="scheme-swatch sw-baikocha"      data-scheme="baikocha"      aria-label="梅幸茶 Baikocha"     title="梅幸茶 Baikocha"></button>
+  <button type="button" class="scheme-swatch sw-tsuyukusa"     data-scheme="tsuyukusa"     aria-label="露草 Tsuyukusa"      title="露草 Tsuyukusa"></button>
+  <button type="button" class="scheme-swatch sw-noshimehana"   data-scheme="noshimehana"   aria-label="熨斗目花 Noshimehana" title="熨斗目花 Noshimehana"></button>
+  <button type="button" class="scheme-swatch sw-kenpohzome"    data-scheme="kenpohzome"    aria-label="憲法染 Kenpohzome"    title="憲法染 Kenpohzome"></button>
+  <button type="button" class="scheme-swatch sw-kurotsurubami" data-scheme="kurotsurubami" aria-label="黒橡 Kurotsurubami"   title="黒橡 Kurotsurubami"></button>
+  <label class="scheme-swatch scheme-custom" title="任意色 Custom">
+    <input type="color" id="scheme-custom-input" value="#43341b" aria-label="Custom background colour">
+  </label>
+</div>
+</div>
+    <div class="footer_social-icons">
+<a href="https://github.com/Waye" target="_blank" rel="noopener noreferrer me"
+    title="Github">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+    </path>
+</svg>
+</a>
+<a href="https://www.linkedin.com/in/weiyihenryhu/" target="_blank" rel="noopener noreferrer me"
+    title="Linkedin">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+    <rect x="2" y="9" width="4" height="12"></rect>
+    <circle cx="4" cy="4" r="2"></circle>
+</svg>
+</a>
+<a href="https://www.instagram.com/henryry.raf/" target="_blank" rel="noopener noreferrer me"
+    title="Instagram">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"></line>
+</svg>
+</a>
+<a href="/index.xml" target="_blank" rel="noopener noreferrer me"
+    title="Rss">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 11a9 9 0 0 1 9 9" />
+    <path d="M4 4a16 16 0 0 1 16 16" />
+    <circle cx="5" cy="19" r="1" />
+</svg>
+</a>
+<a href="https://www.xiaohongshu.com/user/profile/5f756e4000000000010018a6" target="_blank" rel="noopener noreferrer me"
+    title="Xiaohongshu">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 6.5C10.4 5.1 7.9 4.5 4 4.5v13c3.9 0 6.4.6 8 2 1.6-1.4 4.1-2 8-2v-13c-3.9 0-6.4.6-8 2z"/>
+    <path d="M12 6.5v13"/>
+</svg>
+</a>
+<a href="https://www.youtube.com/@only_oneone1751" target="_blank" rel="noopener noreferrer me"
+    title="Youtube">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <path
+        d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z">
+    </path>
+    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+</svg>
+</a>
+<a href="https://space.bilibili.com/8148735" target="_blank" rel="noopener noreferrer me"
+    title="Bilibili">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1.3333" y="6" width="21.333" height="15.333" rx="4" ry="4"/>
+    <path d="m8 12.4v1.2"/>
+    <path d="m16 12.4v1.2"/>
+    <path d="m5.8853 2.6667 2.6667 2.6667"/>
+    <path d="m18.115 2.6667-2.6667 2.6667"/>
+</svg>
+</a>
+<a href="https://x.com/weiyi_hoo" target="_blank" rel="noopener noreferrer me"
+    title="X">
+    <svg viewBox="0 0 1200 1227" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path
+        d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z"/>
+</svg>
+</a>
+</div>
+    <small class="footer_copyright">
+        © 2026 Weiyi(Henry)Hu
+    </small>
+</footer><a href="#" title="Go to top" id="totop">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" stroke="currentColor" viewBox="0 96 960 960">
+    <path d="M283 704.739 234.261 656 480 410.261 725.739 656 677 704.739l-197-197-197 197Z"/>
+</svg>
+
+</a></div>
+        </div>
+
+
+
+
+    
+
+
+
+
+    
+    
+        
+    
+
+    
+    
+        
+    
+
+
+
+    
+    <script async src="http://localhost:1313/js/main.js" ></script>
+
+    
+
+</body>
+</html>
