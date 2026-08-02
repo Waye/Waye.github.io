@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>摄影 on Weiyi(Henry)Hu</title><link>https://weiyi-hu.com/tags/%E6%91%84%E5%BD%B1/</link><description>Recent content in 摄影 on Weiyi(Henry)Hu</description><generator>Hugo -- gohugo.io</generator><language>en-gb</language><lastBuildDate>Wed, 22 Jul 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://weiyi-hu.com/tags/%E6%91%84%E5%BD%B1/index.xml" rel="self" type="application/rss+xml"/><item><title>光与硅 —— 数字成色原理与 Lightroom 调色</title><link>https://weiyi-hu.com/posts/cmy-rgb-lr-research/</link><pubDate>Wed, 22 Jul 2026 00:00:00 +0000</pubDate><guid>https://weiyi-hu.com/posts/cmy-rgb-lr-research/</guid><description>&lt;blockquote>
 &lt;p>想在具体进入lumen-nuro 项目之前先介绍下基本的成色原理, 以及通过lightroom来介绍调色的逻辑
 这篇文章不会牵扯过多的胶片的内容, 但会在之后的文章里解说
-作者:Weiyi | 项目仓库:&lt;code>github.com/Waye/Lumen-Neuro&lt;/code> | 状态:M2 完成(2026-06-02, commit dd3cba1),arXiv 预印包就绪&lt;/p>&lt;/blockquote>
+作者:Weiyi | 项目仓库:&lt;a href="https://github.com/Waye/Lumen-Neuro">github.com/Waye/Lumen-Neuro&lt;/a> | 状态:M2 完成(2026-06-02, commit dd3cba1),arXiv 预印包就绪&lt;/p>&lt;/blockquote>
 &lt;h2 id="序先问一个奇怪的问题">序:先问一个奇怪的问题&lt;/h2>
 &lt;p>打开 Lightroom,你会看到几十根滑块。大部分教程会告诉你&amp;quot;这根往右拉画面变亮&amp;quot;,然后你照做,画面确实变亮了。&lt;/p>
 &lt;p>但很少有人问:&lt;strong>为什么是这几根滑块?&lt;/strong>&lt;/p>
